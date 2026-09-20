@@ -1,0 +1,35 @@
+# Servidor (siempre) + 5 nodos simulados (perfil "nodes") para pruebas locales.
+# En producción solo corre el servicio "server"; los nodos se lanzan desde los equipos del grupo.
+services:
+  server:
+    build: .
+    image: telemetry-server:latest
+    container_name: telemetry-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000/udp"
+      - "5001:5001/tcp"
+      - "8080:8080/tcp"
+
+  node01: &node
+    build: ./node
+    image: telemetry-node:latest
+    profiles: ["nodes"]
+    depends_on: [server]
+    environment:
+      NODE_ID: NODE01
+      NODE_LOCATION: "Planta Norte"
+      SERVER_HOST: server
+      INTERVAL: "2"
+  node02:
+    <<: *node
+    environment: { NODE_ID: NODE02, NODE_LOCATION: "Bodega Sur", SERVER_HOST: server, INTERVAL: "2" }
+  node03:
+    <<: *node
+    environment: { NODE_ID: NODE03, NODE_LOCATION: "Subestacion Este", SERVER_HOST: server, INTERVAL: "3" }
+  node04:
+    <<: *node
+    environment: { NODE_ID: NODE04, NODE_LOCATION: "Torre de Enfriamiento", SERVER_HOST: server, INTERVAL: "2" }
+  node05:
+    <<: *node
+    environment: { NODE_ID: NODE05, NODE_LOCATION: "Cuarto de Bombas", SERVER_HOST: server, INTERVAL: "2", ANOMALY_RATE: "0.15" }

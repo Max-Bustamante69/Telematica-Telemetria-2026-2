@@ -1,0 +1,9 @@
+.git
+docs
+captures
+evidencias
+tests
+deploy
+server/build
+**/__pycache__
+*.md
