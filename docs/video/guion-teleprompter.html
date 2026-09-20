@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090909">
+  <title>Guion de grabación · Telemetría</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #090909;
+      --surface: #101010;
+      --text: #a5a59f;
+      --heading: #8b8b86;
+      --muted: #646460;
+      --faint: #343432;
+      --line: #1d1d1b;
+      --reading-size: clamp(1.35rem, 2.15vw, 2.05rem);
+      --reading-line: 1.72;
+      --measure: 62rem;
+      --gutter: clamp(1.25rem, 5vw, 5rem);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--page);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    button,
+    a { font: inherit; }
+
+    button:focus-visible,
+    a:focus-visible,
+    [contenteditable="true"]:focus-visible {
+      outline: 1px solid #777771;
+      outline-offset: 4px;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      height: 2px;
+      background: #111;
+    }
+
+    .progress__bar {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: #666661;
+      transition: width 80ms linear;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 3.25rem;
+      padding: 0.55rem max(1rem, calc((100vw - var(--measure)) / 2));
+      border-bottom: 1px solid var(--line);
+      background: rgba(9, 9, 9, 0.94);
+      backdrop-filter: blur(14px);
+      color: var(--muted);
+    }
+
+    .toolbar__group {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .toolbar button {
+      min-width: 2.4rem;
+      min-height: 2.25rem;
+      padding: 0.42rem 0.7rem;
+      border: 1px solid #262624;
+      border-radius: 0.25rem;
+      background: var(--surface);
+      color: #82827d;
+      cursor: pointer;
+    }
+
+    .toolbar button:hover,
+    .toolbar button[aria-pressed="true"] {
+      border-color: #454541;
+      color: #abab9f;
+    }
+
+    .toolbar__label {
+      min-width: 4.8rem;
+      color: #5c5c58;
+      font-size: 0.74rem;
+      letter-spacing: 0.07em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    header,
+    main,
+    footer {
+      width: min(100% - (2 * var(--gutter)), var(--measure));
+      margin-inline: auto;
+    }
+
+    header {
+      padding-block: clamp(4rem, 9vw, 8rem) clamp(3rem, 6vw, 5rem);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 1.2rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 13ch;
+      margin: 0;
+      color: var(--heading);
+      font-size: clamp(2.3rem, 7vw, 5.6rem);
+      font-weight: 400;
+      letter-spacing: -0.055em;
+      line-height: 0.98;
+    }
+
+    .intro {
+      max-width: 42rem;
+      margin: 2rem 0 0;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 1.35vw, 1.12rem);
+      line-height: 1.65;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 2rem;
+    }
+
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      min-width: 2.65rem;
+      min-height: 2.65rem;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: #6d6d68;
+      font-size: 0.78rem;
+      text-decoration: none;
+    }
+
+    nav a:hover { border-color: #3c3c39; color: #92928c; }
+
+    main { padding-block: clamp(4rem, 8vw, 8rem); }
+
+    section {
+      scroll-margin-top: 5rem;
+      padding-block: clamp(3rem, 7vw, 6.5rem);
+      border-top: 1px solid var(--line);
+    }
+
+    section:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .section-number {
+      display: block;
+      margin-bottom: 1rem;
+      color: #4f4f4c;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+    }
+
+    h2 {
+      margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+      color: var(--heading);
+      font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
+    }
+
+    .voice {
+      margin: 0;
+      color: var(--text);
+      font-size: var(--reading-size);
+      font-weight: 400;
+      letter-spacing: -0.022em;
+      line-height: var(--reading-line);
+      text-wrap: pretty;
+    }
+
+    [contenteditable="true"] { border-radius: 0.15rem; }
+
+    [contenteditable="true"]:focus {
+      background: #0d0d0d;
+      box-shadow: 0 0 0 0.65rem #0d0d0d;
+    }
+
+    footer {
+      padding-block: 3rem 5rem;
+      border-top: 1px solid var(--line);
+      color: #4f4f4c;
+      font-size: 0.78rem;
+      line-height: 1.6;
+    }
+
+    .end-space {
+      height: max(105svh, 46rem);
+      pointer-events: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 767px) {
+      :root {
+        --gutter: 1.25rem;
+        --reading-size: clamp(1.2rem, 5.6vw, 1.55rem);
+        --reading-line: 1.68;
+      }
+
+      .toolbar {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-inline: 0.75rem;
+      }
+
+      .toolbar__group:last-child { margin-left: auto; }
+      .toolbar__label { display: none; }
+      header { padding-top: 4rem; }
+      .end-space { height: max(110svh, 44rem); }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      :root { --measure: 45rem; }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1439px) {
+      :root { --measure: 58rem; }
+    }
+
+    @media (min-width: 1440px) {
+      :root { --measure: 64rem; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: var(--page); color: var(--text); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .progress__bar { transition: none; }
+    }
+
+    @media print {
+      :root { --reading-size: 15pt; --reading-line: 1.55; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .toolbar, .progress, nav { display: none !important; }
+      body { background: #090909 !important; }
+      header, main, footer { width: calc(100% - 3rem); }
+      header { padding-top: 2rem; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span class="progress__bar" id="progressBar"></span></div>
+
+  <div class="toolbar" role="toolbar" aria-label="Controles de lectura">
+    <div class="toolbar__group">
+      <button type="button" id="fontDown" aria-label="Reducir tamaño de letra">A−</button>
+      <button type="button" id="fontUp" aria-label="Aumentar tamaño de letra">A+</button>
+      <span class="toolbar__label" id="fontLabel" aria-live="polite">Texto 100%</span>
+    </div>
+    <div class="toolbar__group">
+      <button type="button" id="speedDown" aria-label="Reducir velocidad">−</button>
+      <button type="button" id="autoScroll" aria-label="Iniciar desplazamiento automático" aria-pressed="false">Iniciar</button>
+      <button type="button" id="speedUp" aria-label="Aumentar velocidad">+</button>
+      <span class="toolbar__label" id="speedLabel" aria-live="polite">38 px/s</span>
+    </div>
+    <div class="toolbar__group">
+      <button type="button" id="fullscreen" aria-label="Abrir en pantalla completa">Pantalla</button>
+      <button type="button" id="printPage" aria-label="Imprimir o guardar como PDF">PDF</button>
+    </div>
+  </div>
+
+  <header>
+    <p class="eyebrow">Telemática · EAFIT · Plataforma distribuida de telemetría</p>
+    <h1 data-pretext>Guion de grabación</h1>
+    <p class="intro" data-pretext>Lee únicamente los párrafos de voz. Los títulos sirven para nombrar los archivos y orientarte.</p>
+    <nav aria-label="Secciones del guion">
+      <a href="#intro" aria-label="Ir a presentación y problema">01</a>
+      <a href="#protocolo" aria-label="Ir a el protocolo tlp">02</a>
+      <a href="#servidor" aria-label="Ir a el servidor en c">03</a>
+      <a href="#nube" aria-label="Ir a nube, dns y docker">04</a>
+      <a href="#nodos" aria-label="Ir a los nodos de telemetría">05</a>
+      <a href="#operador" aria-label="Ir a el cliente operador y las alertas">06</a>
+      <a href="#fallos" aria-label="Ir a recuperación ante fallos y pruebas">07</a>
+      <a href="#wireshark" aria-label="Ir a análisis de tráfico con wireshark">08</a>
+    </nav>
+  </header>
+
+  <main id="guion">
+    <section id="intro" aria-labelledby="intro-title">
+      <span class="section-number">01 · 01-max-intro.mp4 · Maximiliano</span>
+      <h2 id="intro-title" data-pretext>Presentación y problema</h2>
+      <p class="voice" data-pretext>Hola, somos Maximiliano Bustamante y Valeria Hornung, y este es nuestro proyecto de Telemática: una plataforma distribuida de telemetría. El problema es el de una organización con instalaciones en varios lugares, donde cada una tiene sensores que reportan temperatura, humedad, consumo de energía, vibración y el estado de los equipos. Todo eso tiene que llegar a un servidor central en la nube, y un operador tiene que poder consultar cualquier dispositivo y recibir una alerta cuando algo se sale de rango. Lo resolvimos con tres programas. Nodos de telemetría en Python que simulan los sensores. Un servidor central escrito en C, que corre dentro de un contenedor Docker en una instancia de Amazon EC2. Y un cliente operador, también en Python. Los nodos encuentran el servidor por un nombre DNS: telemetria punto digitdeck punto co. Ningún archivo del proyecto contiene la dirección IP.</p>
+    </section>
+    <section id="protocolo" aria-labelledby="protocolo-title">
+      <span class="section-number">02 · 02-max-protocolo.mp4 · Maximiliano</span>
+      <h2 id="protocolo-title" data-pretext>El protocolo TLP</h2>
+      <p class="voice" data-pretext>Diseñamos un protocolo de aplicación propio, de texto, que llamamos TLP, Telemetry Line Protocol. Cada mensaje es una línea terminada en salto de línea, con campos separados por una barra vertical, y el primer campo es el tipo de mensaje. Un nodo se registra con REGISTER, su identificador, su ubicación y la lista de variables, y el servidor responde OK REGISTERED con el puerto UDP. Después el nodo envía TELEMETRY, identificador, número de secuencia, variable y valor, un datagrama por variable. Y el operador consulta con comandos como LIST NODES, GET LAST o GET STATUS; las respuestas de varias líneas terminan con END, para que el cliente sepa dónde acaba la respuesta sin depender del cierre de la conexión. Los errores llevan un código: 100 formato incorrecto, 101 comando desconocido, 102 nodo desconocido, 103 parámetro inválido, 104 nodo no registrado, 105 línea demasiado larga y 106 servidor lleno. La telemetría va por UDP porque cada nodo manda cinco datagramas cada dos segundos, perder uno no importa, y el número de secuencia nos permite contar exactamente cuántos se perdieron. El registro, las consultas y las alertas van por TCP porque necesitan confirmación y orden: una alerta perdida es un incidente que nadie atendió.</p>
+    </section>
+    <section id="servidor" aria-labelledby="servidor-title">
+      <span class="section-number">03 · 03-max-servidor.mp4 · Maximiliano</span>
+      <h2 id="servidor-title" data-pretext>El servidor en C</h2>
+      <p class="voice" data-pretext>El servidor está escrito en C con sockets POSIX. En tcp operator punto c se ve la secuencia completa: socket, bind en el puerto 5001, listen con una cola de dieciséis, y accept en un bucle. Cada conexión aceptada recibe su propio hilo con pthread create, y el hilo acumula bytes hasta encontrar el salto de línea, porque TCP es un flujo y un comando puede llegar partido en dos lecturas o dos comandos en una sola. En udp telemetry punto c está el otro socket: recvfrom en el puerto 5000 devuelve el datagrama y la dirección del nodo, y sendto responde a esa misma dirección solo cuando el nodo no está registrado. Todo el estado, los nodos, las últimas mediciones y las alertas, vive en una estructura protegida por un mutex. Ignoramos SIGPIPE para que un operador que cierre a mitad de una respuesta no mate el proceso, y al recibir SIGTERM llamamos shutdown sobre los sockets de escucha para que los hilos bloqueados despierten y el servidor termine limpio. El binario corre en Docker, y aquí está docker ps en la instancia: el contenedor lleva horas arriba y el healthcheck dice healthy.</p>
+    </section>
+    <section id="nube" aria-labelledby="nube-title">
+      <span class="section-number">04 · 04-max-nube.mp4 · Maximiliano</span>
+      <h2 id="nube-title" data-pretext>Nube, DNS y Docker</h2>
+      <p class="voice" data-pretext>El servidor está desplegado en una instancia t3 micro de Amazon EC2 en la región de Virginia del Norte, con Ubuntu 24.04. El grupo de seguridad abre exactamente cuatro puertos: 22 TCP para administración, 5000 UDP para telemetría, 5001 TCP para registro y operadores, y 8080 TCP para la interfaz web. La instancia tiene una IP elástica, 100 punto 25 punto 236 punto 127, para que no cambie si se reinicia. En Cloudflare, el registro A telemetria apunta a esa IP con el proxy desactivado, porque el proxy de Cloudflare solo reenvía HTTP y bloquearía UDP y el puerto 5001. Aquí hago nslookup en vivo: telemetria punto digitdeck punto co resuelve a 100 punto 25 punto 236 punto 127. El código se envía a la instancia con git archive por SSH, porque el repositorio es privado, y se construye allí con docker compose: una imagen de dos etapas, gcc para compilar y Debian slim para ejecutar, que pesa 114 megabytes.</p>
+    </section>
+    <section id="nodos" aria-labelledby="nodos-title">
+      <span class="section-number">05 · 05-val-nodos.mp4 · Valeria</span>
+      <h2 id="nodos-title" data-pretext>Los nodos de telemetría</h2>
+      <p class="voice" data-pretext>Los nodos están escritos en Python. Cada nodo tiene un identificador único, simula cinco variables y, antes de nada, resuelve el nombre del servidor con getaddrinfo: la primera línea de salida siempre muestra el nombre y la IP que obtuvo. Luego se registra por TCP con REGISTER y espera el OK REGISTERED. A partir de ahí envía por UDP cinco datagramas cada dos segundos, uno por variable, con un número de secuencia que crece de uno en uno. Si el servidor se reinicia y pierde el registro, responde NACK 104 por UDP, y el nodo se vuelve a registrar solo, sin intervención. Aquí lanzo cinco nodos al mismo tiempo desde mi equipo, NODE01 a NODE05, y en la interfaz web del servidor aparecen los cinco en estado ACTIVE, con el contador de datagramas recibidos subiendo y cero perdidos.</p>
+    </section>
+    <section id="operador" aria-labelledby="operador-title">
+      <span class="section-number">06 · 06-val-operador.mp4 · Valeria</span>
+      <h2 id="operador-title" data-pretext>El cliente operador y las alertas</h2>
+      <p class="voice" data-pretext>El cliente operador se conecta por TCP al puerto 5001. Con LIST NODES veo todos los nodos registrados, su ubicación, si están activos y cuántos datagramas ha recibido y perdido cada uno. Con GET LAST y un identificador veo las últimas mediciones de ese nodo, y con GET STATUS su estado. SYSTEM STATUS resume el servidor: tiempo activo, nodos, operadores conectados y contadores de UDP y TCP. Si escribo un comando que no existe, el servidor responde error 101, y si pregunto por un nodo que no existe, error 102: la conexión sigue viva. Ahora me suscribo a las alertas con SUBSCRIBE ALERTS y, en otra terminal, lanzo un nodo con la opción force alert TEMP, que manda temperaturas por encima de 40 grados. La alerta TEMP HIGH llega sola al operador por la misma conexión TCP, y aparece también en GET ALERTS y en la tabla de alertas de la web.</p>
+    </section>
+    <section id="fallos" aria-labelledby="fallos-title">
+      <span class="section-number">07 · 07-val-fallos.mp4 · Valeria</span>
+      <h2 id="fallos-title" data-pretext>Recuperación ante fallos y pruebas</h2>
+      <p class="voice" data-pretext>Ahora las pruebas de recuperación. Con los nodos enviando, reinicio el contenedor por SSH con docker restart. El nodo recibe cinco NACK 104, uno por cada variable del ciclo, envía REGISTER otra vez, recibe OK REGISTERED y sigue con la telemetría: once segundos entre el reinicio y el reregistro, sin tocar nada. Si detengo un nodo con control C, manda BYE por TCP y en LIST NODES pasa a INACTIVE. También le enviamos datagramas basura y una línea de 700 bytes por TCP: el servidor los cuenta como inválidos y sigue respondiendo. Todo esto está automatizado en tests e2e punto sh, que corre veinte comprobaciones contra el servidor en la nube: todas en verde. Y la prueba de conteo: loss test envía 500 datagramas numerados a 478 por segundo desde Medellín hasta Virginia; el servidor recibió los 500 y no detectó ningún hueco en la secuencia.</p>
+    </section>
+    <section id="wireshark" aria-labelledby="wireshark-title">
+      <span class="section-number">08 · 08-val-wireshark.mp4 · Valeria</span>
+      <h2 id="wireshark-title" data-pretext>Análisis de tráfico con Wireshark</h2>
+      <p class="voice" data-pretext>Esta captura se tomó en mi equipo mientras un nodo y un operador hablaban con el servidor en la nube. Con el filtro udp punto port igual 5000 veo un datagrama de telemetría: IP de origen privada 192 punto 168 punto 58 punto 130, destino 100 punto 25 punto 236 punto 127, puerto de origen efímero 49921, puerto destino 5000, longitud UDP 37, que son 8 bytes de cabecera más 29 de datos, y en los bytes se lee el texto TELEMETRY NODE12 1 TEMP 24 punto 5. No hay conexión ni confirmación: el primer paquete ya lleva datos. Con tcp punto stream igual 1 está la conexión del operador: SYN, SYN ACK y ACK, el saludo de tres vías, con 85 milisegundos entre el SYN y el SYN ACK, que es la ida y vuelta hasta Virginia. Después el segmento PSH ACK con GET LAST, el ACK del servidor confirmando 16 bytes, la respuesta de 160 bytes, QUIT, OK BYE y el cierre con FIN. Y con el filtro de DNS está la consulta A y la respuesta con la IP y un TTL de 260 segundos. En resumen: el mensaje TLP es la carga de aplicación; UDP o TCP añaden los puertos, y TCP además secuencia y confirmación; e IP añade las direcciones que cruzan Internet hasta la instancia.</p>
+    </section>
+
+    <div class="end-space" aria-hidden="true"></div>
+  </main>
+
+  <footer>
+    <p>Maximiliano Bustamante y Valeria Hornung · Telemática 2026-2 · EAFIT</p>
+    <p>Atajos: espacio inicia o pausa · ↑ y ↓ cambian la velocidad · 1–8 salta entre secciones · F abre pantalla completa.</p>
+  </footer>
+
+  <p class="sr-only" id="readerStatus" aria-live="polite"></p>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const progressBar = document.getElementById('progressBar');
+      const autoButton = document.getElementById('autoScroll');
+      const speedLabel = document.getElementById('speedLabel');
+      const fontLabel = document.getElementById('fontLabel');
+      const readerStatus = document.getElementById('readerStatus');
+      const toolbar = document.querySelector('.toolbar');
+      const sectionIds = ['intro', 'protocolo', 'servidor', 'nube', 'nodos', 'operador', 'fallos', 'wireshark'];
+      const firstVoice = document.querySelector('#intro .voice');
+      const finalVoice = document.querySelector('#wireshark .voice');
+
+      let fontScale = Number(localStorage.getItem('guion-font-scale')) || 1;
+      let speed = Number(localStorage.getItem('guion-scroll-speed')) || 38;
+      let scrolling = false;
+      let lastFrame = 0;
+      let scrollPosition = window.scrollY;
+
+      function applyFontScale() {
+        root.style.setProperty('--reading-size', `clamp(${1.35 * fontScale}rem, ${2.15 * fontScale}vw, ${2.05 * fontScale}rem)`);
+        fontLabel.textContent = `Texto ${Math.round(fontScale * 100)}%`;
+        localStorage.setItem('guion-font-scale', String(fontScale));
+        window.dispatchEvent(new Event('resize'));
+      }
+
+      function applySpeed() {
+        speedLabel.textContent = `${speed} px/s`;
+        localStorage.setItem('guion-scroll-speed', String(speed));
+      }
+
+      function setScrolling(next) {
+        if (next) {
+          const firstReadingPosition = firstVoice.getBoundingClientRect().top + window.scrollY - getReadingTop();
+          const finalReadingPosition = finalVoice.getBoundingClientRect().bottom + window.scrollY - getReadingTop();
+          if (window.scrollY < firstReadingPosition - 2 || window.scrollY >= finalReadingPosition - 2) {
+            window.scrollTo({ top: firstReadingPosition, behavior: 'instant' });
+          }
+        }
+        scrollPosition = window.scrollY;
+        scrolling = next;
+        autoButton.textContent = scrolling ? 'Pausar' : 'Iniciar';
+        autoButton.setAttribute('aria-pressed', String(scrolling));
+        readerStatus.textContent = scrolling ? 'Desplazamiento automático iniciado' : 'Desplazamiento automático pausado';
+        lastFrame = performance.now();
+      }
+
+      function getReadingTop() {
+        return toolbar.offsetHeight + 20;
+      }
+
+      function tick(now) {
+        if (scrolling) {
+          const delta = Math.min((now - lastFrame) / 1000, 0.1);
+          scrollPosition += speed * delta;
+          window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+          const readingTop = getReadingTop();
+          const finalReadingPosition = finalVoice.offsetTop + finalVoice.offsetHeight - readingTop;
+          if (window.scrollY >= finalReadingPosition) setScrolling(false);
+        }
+        lastFrame = now;
+        requestAnimationFrame(tick);
+      }
+
+      function updateProgress() {
+        const readingTop = getReadingTop();
+        const total = Math.max(1, finalVoice.offsetTop + finalVoice.offsetHeight - readingTop);
+        const value = total > 0 ? Math.min(100, (window.scrollY / total) * 100) : 0;
+        progressBar.style.width = `${value}%`;
+      }
+
+      document.getElementById('fontDown').addEventListener('click', () => {
+        fontScale = Math.max(0.75, Number((fontScale - 0.1).toFixed(2)));
+        applyFontScale();
+      });
+
+      document.getElementById('fontUp').addEventListener('click', () => {
+        fontScale = Math.min(1.7, Number((fontScale + 0.1).toFixed(2)));
+        applyFontScale();
+      });
+
+      document.getElementById('speedDown').addEventListener('click', () => {
+        speed = Math.max(10, speed - 4);
+        applySpeed();
+      });
+
+      document.getElementById('speedUp').addEventListener('click', () => {
+        speed = Math.min(100, speed + 4);
+        applySpeed();
+      });
+
+      autoButton.addEventListener('click', () => setScrolling(!scrolling));
+
+      document.getElementById('fullscreen').addEventListener('click', async () => {
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
+      });
+
+      document.getElementById('printPage').addEventListener('click', () => window.print());
+
+      document.addEventListener('keydown', (event) => {
+        const editing = document.activeElement?.getAttribute?.('contenteditable') === 'true';
+        if (event.key === 'Escape' && editing) document.activeElement.blur();
+        if (editing) return;
+
+        if (event.code === 'Space') {
+          event.preventDefault();
+          setScrolling(!scrolling);
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          speed = Math.min(100, speed + 4);
+          applySpeed();
+        } else if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          speed = Math.max(10, speed - 4);
+          applySpeed();
+        } else if (event.key.toLowerCase() === 'f') {
+          document.getElementById('fullscreen').click();
+        } else if (/^[1-8]$/.test(event.key)) {
+          document.getElementById(sectionIds[Number(event.key) - 1])?.scrollIntoView();
+        }
+      });
+
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      window.addEventListener('resize', updateProgress);
+      applyFontScale();
+      applySpeed();
+      updateProgress();
+      requestAnimationFrame(tick);
+    })();
+  </script>
+
+  <!-- FALLBACK: vendor/pretext.js missing, using CDN -->
+  <script type="module">
+    try {
+      const { prepare, layout, setLocale } = await import('https://esm.sh/@chenglou/pretext');
+      setLocale?.('es');
+      await document.fonts.ready;
+
+      const elements = [...document.querySelectorAll('[data-pretext]')];
+      const prepared = new Map();
+
+      function prepareElement(element) {
+        prepared.set(element, prepare(element.textContent, getComputedStyle(element).font));
+      }
+
+      function relayout() {
+        for (const [element, handle] of prepared) {
+          const style = getComputedStyle(element);
+          const lineHeight = Number.parseFloat(style.lineHeight) || Number.parseFloat(style.fontSize) * 1.6;
+          const result = layout(handle, element.clientWidth, lineHeight);
+          if (Number.isFinite(result.height)) element.style.minHeight = `${Math.ceil(result.height)}px`;
+        }
+      }
+
+      for (const element of elements) {
+        prepareElement(element);
+        if (element.contentEditable === 'true') {
+          new MutationObserver(() => {
+            prepareElement(element);
+            relayout();
+          }).observe(element, { characterData: true, subtree: true, childList: true });
+        }
+      }
+
+      new ResizeObserver(relayout).observe(document.body);
+      relayout();
+    } catch (error) {
+      console.info('La página conserva su maquetación CSS sin el módulo opcional de medición tipográfica.', error);
+    }
+  </script>
+</body>
+</html>

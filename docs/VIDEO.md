@@ -4,6 +4,8 @@ Duración objetivo: 16 minutos. Dos integrantes, ocho minutos cada uno. La edici
 
 ## Cómo grabar
 
+- El texto exacto que dice cada uno está en `docs/video/GUION_DE_GRABACION.md`, y el teleprompter es `docs/video/guion-teleprompter.html`: se abre en el navegador (doble clic), F para pantalla completa, espacio para que el texto avance solo, flechas arriba y abajo para la velocidad, y los números 1 a 8 saltan a cada clip. Conviene ponerlo en un segundo monitor o en el celular, cerca de la cámara.
+
 - Pantalla completa a 1920x1080 con la cámara en una esquina (OBS, o la grabación de Teams o Zoom). Si la cámara va aparte, mandar los dos archivos con el mismo nombre y sufijo `-cam`.
 - Un clip por sección, en un solo intento largo; los errores se cortan en edición. No hace falta que quede perfecto.
 - Nombre del archivo exactamente como está en la tabla: `01-max-intro.mp4`, `02-max-protocolo.mp4`, etc.
