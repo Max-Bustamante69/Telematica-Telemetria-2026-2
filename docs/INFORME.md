@@ -396,7 +396,11 @@ En Internet no se perdió ningún datagrama en 500 enviados a 478 por segundo. C
 
 ### 12.1 Maximiliano Bustamante
 
-![Captura](../evidencias/max-1-nodo.png)
+Equipo `DESKTOP-J05EGID`, usuario `desktop-j05egid\usuario`, 20 de septiembre de 2026.
+
+![Figura 4. Nodo NODE11 ejecutado en el equipo de Maximiliano: whoami, hostname, fecha, resolución DNS, REGISTER por TCP y telemetría por UDP hacia telemetria.digitdeck.co.](../evidencias/max-1-nodo.png)
+
+![Figura 5. Cliente operador desde el mismo equipo: nslookup, LIST_NODES con 9 nodos, GET_ALERTS y SYSTEM_STATUS contra el servidor en la nube.](../evidencias/max-2-operador.png)
 
 ### 12.2 Valeria Frances Hornung
 

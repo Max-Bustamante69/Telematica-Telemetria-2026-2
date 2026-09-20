@@ -4,6 +4,8 @@ Cada integrante guarda aquí sus capturas de pantalla, con el nombre `<integrant
 
 Cada integrante necesita como mínimo dos capturas tomadas en su propio computador.
 
+En Windows los dos scripts de esta carpeta hacen todo: `pwsh -File evidencias\capturar.ps1 NODE12 "Casa de Valeria"` y `pwsh -File evidencias\capturar-operador.ps1`. Tomar la captura con la ventana completa.
+
 ## Captura 1: identidad y ejecución de un componente
 
 En la misma terminal, sin cerrarla:
