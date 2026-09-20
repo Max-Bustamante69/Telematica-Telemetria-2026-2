@@ -1,6 +1,6 @@
 # Guion de grabación
 
-Lee únicamente los párrafos de voz. Los títulos sirven para nombrar los archivos y orientarte. El teleprompter es `guion-teleprompter.html` en esta misma carpeta: ábrelo en el navegador, pulsa F para pantalla completa y espacio para que el texto avance solo.
+Lee únicamente los párrafos de voz. Los títulos sirven para nombrar los archivos y orientarte. El teleprompter de cada integrante es `teleprompter-maximiliano.html` o `teleprompter-valeria.html`, en esta misma carpeta: ábrelo en el navegador, pulsa F para pantalla completa y espacio para que el texto avance solo.
 
 ## 01-max-intro.mp4 — Presentación y problema (Maximiliano)
 
