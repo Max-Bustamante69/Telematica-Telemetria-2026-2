@@ -4,7 +4,7 @@
 
 Dos capturas desde el computador de un integrante, con el servidor ya desplegado en EC2:
 
-1. `captures/tcp-operador.pcapng`: abrir Wireshark en la interfaz de red activa, aplicar el filtro de captura `host telemetria.digitdeck.co and (tcp port 5001 or udp port 5000)`, y ejecutar un nodo durante 20 segundos y luego el operador con `LIST_NODES` y `GET_LAST|NODE01`.
+1. `captures/telemetria-tcp-udp-dns.pcapng`: abrir Wireshark en la interfaz de red activa, aplicar el filtro de captura `host telemetria.digitdeck.co and (tcp port 5001 or udp port 5000)`, y ejecutar un nodo durante 20 segundos y luego el operador con `LIST_NODES` y `GET_LAST|NODE01`.
 2. `captures/dns.pcapng`: filtro de captura `udp port 53`, ejecutar `nslookup telemetria.digitdeck.co`.
 
 Antes de capturar conviene vaciar la caché DNS para que la consulta salga a la red: `ipconfig /flushdns` en Windows, `resolvectl flush-caches` en Linux.
@@ -47,7 +47,7 @@ Relación con las capas: el texto TLP viaja como carga útil; TCP añade puertos
 Si el integrante prefiere línea de comandos:
 
 ```bash
-tshark -r captures/tcp-operador.pcapng -Y "udp.port == 5000" -T fields -e ip.src -e ip.dst -e udp.srcport -e udp.dstport -e data.text -o data.show_as_text:TRUE | head
-tshark -r captures/tcp-operador.pcapng -Y "tcp.flags.syn == 1"
+tshark -r captures/telemetria-tcp-udp-dns.pcapng -Y "udp.port == 5000" -T fields -e ip.src -e ip.dst -e udp.srcport -e udp.dstport -e data.text -o data.show_as_text:TRUE | head
+tshark -r captures/telemetria-tcp-udp-dns.pcapng -Y "tcp.flags.syn == 1"
 tshark -r captures/dns.pcapng -Y "dns" -T fields -e dns.qry.name -e dns.a
 ```

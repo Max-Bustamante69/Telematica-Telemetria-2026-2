@@ -247,47 +247,57 @@ $ python node/node.py --id NODE09 --server telemetria.digitdeck.co
 
 ## 8. Análisis de tráfico con Wireshark
 
-Capturas en `captures/`. La guía de filtros está en `docs/WIRESHARK.md`.
+Captura `captures/telemetria-tcp-udp-dns.pcapng`, tomada el 20 de septiembre de 2026 en el equipo de Maximiliano (Ethernet, IP privada `192.168.58.130`) con el filtro de captura `host 100.25.236.127 or udp port 53` mientras corría un nodo (`NODE12`) y un operador (`GET_LAST|NODE12`) contra `telemetria.digitdeck.co`. Contiene 562 paquetes: 471 datagramas UDP de telemetría (los seis nodos de la demo también pasan por esta interfaz), 70 de DNS y 21 segmentos TCP. La guía de filtros está en `docs/WIRESHARK.md`.
 
 ### 8.1 Datagrama UDP de telemetría
 
-[Captura: `evidencias/wireshark-udp.png`, filtro `udp.port == 5000`.]
+![Figura 6. Wireshark con el filtro `udp.port==5000 && frame contains "NODE12"`. Paquete 101: IP 192.168.58.130 a 100.25.236.127, UDP 49921 a 5000, 29 bytes de datos con el texto TELEMETRY|NODE12|1|TEMP|24.5.](../evidencias/wireshark-udp.png)
 
-**Tabla 6.** Campos observados en un datagrama `TELEMETRY`.
+**Tabla 6.** Campos del datagrama 101 (`TELEMETRY|NODE12|1|TEMP|24.5`).
 
 | Capa | Campo | Valor observado | Explicación |
 |---|---|---|---|
-| Red | IP origen | [IP privada del equipo] | Dirección del nodo; si hay NAT, la instancia ve la IP pública del router |
-| Red | IP destino | [IP de EC2] | La que devolvió el DNS |
-| Transporte | Puerto origen | [efímero, p. ej. 51xxx] | Asignado por el sistema operativo al socket UDP del nodo |
+| Red | IP origen | 192.168.58.130 | Dirección privada del equipo; el router hace NAT hacia la IP pública 179.1.73.85, que es la que ve el servidor en su log |
+| Red | IP destino | 100.25.236.127 | La que devolvió el DNS (IP elástica de la instancia) |
+| Red | TTL | 128 | Valor inicial de Windows; cada router lo descuenta en uno |
+| Transporte | Puerto origen | 49921 | Puerto efímero asignado al socket UDP del nodo; se mantiene durante toda la ejecución |
 | Transporte | Puerto destino | 5000 | El servidor hace `bind()` en ese puerto |
-| Transporte | Longitud | [8 + bytes de datos] | Cabecera UDP de 8 bytes más el mensaje |
-| Aplicación | Datos | `TELEMETRY|NODE01|17|TEMP|24.3` | El mensaje TLP en texto |
+| Transporte | Longitud UDP | 37 | 8 bytes de cabecera más 29 de datos |
+| Aplicación | Datos | `TELEMETRY\|NODE12\|1\|TEMP\|24.5\n` | El mensaje TLP en texto, visible en el panel de bytes |
 
-No hay establecimiento de conexión: el primer paquete ya lleva datos. No hay confirmación del servidor. Por eso la pérdida se mide en la capa de aplicación con el campo `seq`.
+Los cinco datagramas de un ciclo (secuencias 1 a 5) salen con 50 ms de separación y el mismo puerto origen. No hay establecimiento de conexión ni confirmación: el primer paquete ya lleva datos y el servidor no responde. Por eso la pérdida se mide en la capa de aplicación con el campo `seq`.
 
 ### 8.2 Conexión TCP del operador
 
-[Captura: `evidencias/wireshark-tcp-handshake.png`, filtro `tcp.port == 5001`.]
+![Figura 7. Wireshark con el filtro `tcp.stream==1`: saludo de tres vías, `GET_LAST|NODE12`, respuesta de 160 bytes, `QUIT`, `OK|BYE` y cierre con FIN. Seleccionado el SYN con sus banderas.](../evidencias/wireshark-tcp-handshake.png)
 
-1. `SYN` del operador (puerto efímero → 5001), número de secuencia relativo 0.
-2. `SYN, ACK` del servidor.
-3. `ACK` del operador. La conexión queda establecida.
-4. `PSH, ACK` con `LIST_NODES\n` (11 bytes de datos).
-5. `ACK` del servidor y luego `PSH, ACK` con `OK|NODES|5\nNODE|…\nEND\n`.
-6. Al enviar `QUIT`: respuesta `OK|BYE`, `FIN, ACK` del servidor, `FIN, ACK` del operador, `ACK` final.
+**Tabla 6b.** Segmentos de la conversación `tcp.stream==1` (operador 192.168.58.130:61724 con el servidor 100.25.236.127:5001), tiempos relativos al inicio de la captura.
 
-Con "Follow TCP Stream" se lee toda la sesión en texto. Los números de secuencia y confirmación de TCP muestran cómo cada byte queda contabilizado, cosa que no existe en UDP.
+| Paquete | Tiempo (s) | Sentido | Banderas | Seq | Ack | Datos | Contenido |
+|---|---|---|---|---|---|---|---|
+| 257 | 11.454 | operador a servidor | SYN | 0 | 0 | 0 | inicio del saludo |
+| 267 | 11.539 | servidor a operador | SYN, ACK | 0 | 1 | 0 | el servidor acepta (`accept()` recibe la conexión) |
+| 268 | 11.539 | operador a servidor | ACK | 1 | 1 | 0 | conexión establecida |
+| 269 | 11.539 | operador a servidor | PSH, ACK | 1 | 1 | 16 | `GET_LAST\|NODE12\n` |
+| 270 | 11.624 | servidor a operador | ACK | 1 | 17 | 0 | confirma los 16 bytes |
+| 271 | 11.625 | servidor a operador | PSH, ACK | 1 | 17 | 160 | `OK\|LAST\|NODE12\|5`, cinco `MEASURE`, `END` |
+| 272 | 11.625 | operador a servidor | PSH, ACK | 17 | 161 | 5 | `QUIT\n` |
+| 274 | 11.708 | servidor a operador | PSH, ACK | 161 | 22 | 7 | `OK\|BYE\n` |
+| 275 | 11.709 | servidor a operador | FIN, ACK | 168 | 22 | 0 | el servidor cierra tras `QUIT` |
+| 277 | 11.709 | operador a servidor | FIN, ACK | 22 | 169 | 0 | el operador cierra |
+| 279 | 11.793 | servidor a operador | ACK | 169 | 23 | 0 | cierre completo |
+
+El tiempo de ida y vuelta entre Medellín y Virginia del Norte se ve en el saludo: 85 ms entre el SYN y el SYN-ACK. Los números de secuencia y de confirmación contabilizan cada byte (el ACK 17 confirma los 16 bytes de `GET_LAST` más el SYN), y con "Follow TCP Stream" la sesión se lee completa en texto. Nada de eso existe en UDP. El registro del nodo (`tcp.stream==0`, paquetes 94 a 104) sigue el mismo patrón: SYN, SYN-ACK, ACK, `REGISTER` de 61 bytes, `OK|REGISTERED|NODE12|5000` de 26 bytes y cierre iniciado por el nodo.
 
 ### 8.3 Consulta DNS
 
-[Captura: `evidencias/wireshark-dns.png`, filtro `dns.qry.name contains "telemetria"`.]
+![Figura 8. Wireshark con el filtro `dns.qry.name contains "telemetria"`: consulta A (paquete 88) al resolvedor 192.168.58.1 y respuesta (paquete 89) con 100.25.236.127 y TTL 260 s.](../evidencias/wireshark-dns.png)
 
-Consulta `A telemetria.digitdeck.co` al resolvedor configurado (UDP 53) y respuesta con la IP de la instancia y su TTL. Esta IP es la que aparece como destino en 8.1 y 8.2.
+Antes de la prueba se vació la caché (`ipconfig /flushdns`) para que la consulta saliera a la red. El nodo pide el registro A (paquete 88, UDP 55638 a 53) y el resolvedor del router responde en 10 ms (paquete 89) con `telemetria.digitdeck.co A 100.25.236.127`, TTL 260 s. Python también pregunta por AAAA (paquetes 90 y 91) y recibe una respuesta vacía con el SOA de Cloudflare: el servidor solo tiene IPv4. Esa IP es la que aparece como destino en 8.1 y 8.2.
 
 ### 8.4 Relación con las capas
 
-El mensaje TLP es la carga útil (capa de aplicación). UDP o TCP añaden puertos para llegar al proceso correcto dentro de la instancia (capa de transporte); TCP además añade secuencia, confirmación y control de flujo. IP añade las direcciones que permiten que el datagrama cruce el router del equipo, el ISP, Internet y el grupo de seguridad de AWS hasta la instancia (capa de red). Docker publica el puerto del contenedor en la interfaz de la instancia con una regla NAT, invisible para el cliente.
+El mensaje TLP es la carga útil (capa de aplicación). UDP o TCP añaden puertos para llegar al proceso correcto dentro de la instancia (capa de transporte); TCP además añade secuencia, confirmación y control de flujo. IP añade las direcciones que permiten que el datagrama cruce el router del equipo (NAT de 192.168.58.130 a 179.1.73.85), el ISP, Internet y el grupo de seguridad de AWS hasta la instancia (capa de red). Docker publica el puerto del contenedor en la interfaz de la instancia con una regla NAT, invisible para el cliente.
 
 ## 9. Pruebas y resultados
 
