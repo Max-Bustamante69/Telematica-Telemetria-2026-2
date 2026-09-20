@@ -62,8 +62,9 @@ python tests/loss_test.py --server localhost --count 500 --drop 50   # transmiti
 ## Despliegue en AWS
 
 1. `deploy/aws/create-instance.sh` crea el grupo de seguridad (22/tcp, 5000/udp, 5001/tcp, 8080/tcp), el par de llaves y la instancia Ubuntu 24.04 con el `user-data` que instala Docker y levanta el contenedor.
-2. Apuntar el registro A `telemetria.digitdeck.co` a la IP pública (`deploy/dns.md`).
-3. Comprobar desde otro equipo: `python operator_client/operator_client.py --server telemetria.digitdeck.co --cmd PING`.
+2. Apuntar el registro A `telemetria.digitdeck.co` a la IP pública (`deploy/dns.md`). La instancia actual tiene la IP elástica `100.25.236.127`.
+3. Enviar el código y construir el contenedor: `bash deploy/deploy.sh` (manda un `git archive` por SSH porque el repositorio es privado; repetirlo para desplegar un cambio).
+4. Comprobar desde otro equipo: `python operator_client/operator_client.py --server telemetria.digitdeck.co --cmd PING`.
 
 Operación en la instancia:
 

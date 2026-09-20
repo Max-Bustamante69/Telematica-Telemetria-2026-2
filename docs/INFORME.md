@@ -197,7 +197,17 @@ docker ps
 docker logs -f telemetry-server
 ```
 
-[Captura: `evidencias/docker-build.png` y `evidencias/docker-ps.png`.]
+Salida real en la instancia (`ip-172-31-16-159`), 20 de septiembre de 2026:
+
+```
+$ sudo docker ps
+NAMES              IMAGE                     STATUS                   PORTS
+telemetry-server   telemetry-server:latest   Up 9 minutes (healthy)   0.0.0.0:5001->5001/tcp, 0.0.0.0:5000->5000/udp, 0.0.0.0:8080->8080/tcp
+$ sudo docker images telemetry-server
+telemetry-server:latest 114MB
+```
+
+[Captura: `evidencias/docker-build.png` y `evidencias/docker-ps.png` tomadas por SSH.]
 
 ### 7.2 AWS EC2
 
@@ -218,7 +228,24 @@ El despliegue se hizo con AWS CLI desde CloudShell, con los mismos comandos de `
 
 El nombre `telemetria.digitdeck.co` es un registro A en Cloudflare que apunta a la IP pública de la instancia, con el proxy desactivado (el proxy de Cloudflare solo pasa HTTP y bloquearía UDP 5000 y TCP 5001). Ningún archivo del repositorio contiene la IP: los clientes reciben el nombre por argumento o por la variable `SERVER_HOST` y lo resuelven con `getaddrinfo()`. La primera línea de salida de cada cliente es `DNS: telemetria.digitdeck.co -> <IP>`.
 
+Resolución desde un equipo del grupo:
+
+```
+$ nslookup telemetria.digitdeck.co
+Name:    telemetria.digitdeck.co
+Address: 100.25.236.127
+
+$ python node/node.py --id NODE09 --server telemetria.digitdeck.co
+00:16:18 DNS: telemetria.digitdeck.co -> 100.25.236.127
+00:16:18 TCP -> REGISTER|NODE09|Prueba reinicio|TEMP,HUM,ENERGY,VIB,STATUS
+00:16:18 TCP <- OK|REGISTERED|NODE09|5000
+```
+
 [Captura: `evidencias/dns-cloudflare.png` y `evidencias/dns-nslookup.png`.]
+
+### 7.4 Interfaz web desde Internet
+
+![Figura 3. Interfaz web en http://telemetria.digitdeck.co:8080 con seis nodos enviando desde Medellín al servidor en Virginia del Norte: 4055 datagramas recibidos, 0 perdidos, 217 alertas del nodo que fuerza temperatura alta.](../evidencias/web-telemetria-digitdeck-co.png)
 
 ## 8. Análisis de tráfico con Wireshark
 
@@ -333,6 +360,16 @@ En Internet no se perdió ningún datagrama en 500 enviados a 478 por segundo. C
 | Recuperación ante desconexión o mensaje incorrecto | `docker restart telemetry-server` con `NODE09` enviando desde Medellín: el nodo recibió 5 `NACK|104` (uno por variable del ciclo), volvió a enviar `REGISTER`, recibió `OK|REGISTERED` y siguió con la telemetría sin intervención (11 s entre el reinicio y el reregistro). Ctrl+C en un nodo, basura por UDP y línea larga por TCP se prueban en `e2e.sh` |
 
 ## 10. Problemas encontrados y soluciones implementadas
+
+0. **Reinicio del contenedor con nodos activos, medido.** Registro del nodo `NODE09` durante `docker restart telemetry-server`:
+
+```
+00:16:18 TCP <- OK|REGISTERED|NODE09|5000
+00:16:29 UDP <- NACK|104|NOT_REGISTERED      (x5, una por variable del ciclo)
+00:16:29 TCP -> REGISTER|NODE09|Prueba reinicio|TEMP,HUM,ENERGY,VIB,STATUS
+00:16:29 TCP <- OK|REGISTERED|NODE09|5000
+00:16:36 resumen: datagramas UDP enviados=40 nacks=5 ultimo_seq=15
+```
 
 1. **El cliente operador no arrancaba en Linux.** El archivo se llamaba `operator.py` y estaba en una carpeta `operator/`; Python cargaba ese archivo en lugar del módulo estándar `operator`, del que depende `argparse`. Se renombró a `operator_client/operator_client.py`.
 2. **La respuesta de `LIST_NODES` se cortaba en la segunda línea.** El cliente decidía si la respuesta era multilínea mirando cada línea y no solo la primera. Se corrigió para evaluar el tipo con la primera línea y leer hasta `END`.
