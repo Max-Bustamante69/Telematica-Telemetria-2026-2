@@ -12,8 +12,8 @@ lang: es
 
 | Integrante | Correo | Parte desarrollada |
 |---|---|---|
-| Maximiliano Bustamante | mbustamang@eafit.edu.co | [ajustar] |
-| Valeria Frances Hornung | vvhornung@eafit.edu.co | [ajustar] |
+| Maximiliano Bustamante | mbustamang@eafit.edu.co | Diseño del protocolo TLP/1.0, servidor en C (sockets TCP y UDP, hilos, alertas, interfaz web), Docker, despliegue en EC2 y DNS; secciones 2 a 7 del informe |
+| Valeria Frances Hornung | vvhornung@eafit.edu.co | Nodo de telemetría y cliente operador en Python, suite de pruebas y prueba de pérdida, captura y análisis con Wireshark, evidencias; secciones 8 a 11 del informe |
 
 Repositorio privado: https://github.com/Max-Bustamante69/Telematica-Telemetria-2026-2
 
