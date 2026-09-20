@@ -1,0 +1,8 @@
+body{font-family:"Segoe UI",Arial,sans-serif;font-size:11pt;line-height:1.45;max-width:17cm;margin:0 auto;color:#111}
+h1{font-size:20pt;border-bottom:2px solid #333;padding-bottom:4px;margin-top:28pt}
+h2{font-size:15pt;margin-top:22pt}h3{font-size:12pt}
+header{text-align:center;margin:60pt 0 40pt}header h1{border:0;font-size:22pt}header p{margin:4pt}
+table{border-collapse:collapse;width:100%;font-size:9.5pt;margin:8pt 0}th,td{border:1px solid #999;padding:4pt 6pt;text-align:left;vertical-align:top}th{background:#eee}
+pre{background:#f4f4f4;border:1px solid #ddd;padding:8pt;font-size:9pt;white-space:pre-wrap}code{font-size:9.5pt}
+img{max-width:100%}figure{margin:10pt 0;text-align:center}figcaption{font-size:9pt;color:#444}
+@page{size:A4;margin:2cm}h1{page-break-before:always}header+h1,h1:first-of-type{page-break-before:avoid}

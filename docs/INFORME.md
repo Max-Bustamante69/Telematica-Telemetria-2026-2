@@ -39,9 +39,7 @@ El informe sigue el orden de la sección 12.2 del enunciado. Todas las figuras y
 
 ## 3. Diagrama de arquitectura
 
-![Figura 1. Arquitectura del sistema. Los nodos resuelven el nombre DNS, se registran por TCP y envían telemetría por UDP. Los operadores consultan por TCP. El navegador usa HTTP. Todo llega a un contenedor Docker en EC2 con cuatro hilos fijos y un hilo por cliente TCP.](figuras/arquitectura.svg)
-
-**Figura 1.** Arquitectura del sistema. Fuente: elaboración propia.
+![Figura 1. Arquitectura del sistema (elaboración propia). Los nodos resuelven el nombre DNS, se registran por TCP y envían telemetría por UDP. Los operadores consultan por TCP. El navegador usa HTTP. Todo llega a un contenedor Docker en EC2 con cuatro hilos fijos y un hilo por cliente TCP.](figuras/arquitectura.svg)
 
 Componentes y responsabilidades:
 
@@ -57,9 +55,7 @@ Componentes y responsabilidades:
 | Nodo | `node/node.py` | DNS, REGISTER por TCP, telemetría por UDP, reintentos, reregistro tras NACK, BYE al salir |
 | Operador | `operator_client/operator_client.py` | Conexión TCP, menú interactivo, modo de un solo comando, hilo que escucha alertas |
 
-![Figura 2. Secuencia de un ciclo completo: registro, telemetría, suscripción del operador, alerta empujada por el servidor, consulta y baja.](figuras/secuencia.svg)
-
-**Figura 2.** Secuencia de mensajes en un ciclo típico. Fuente: elaboración propia.
+![Figura 2. Secuencia de un ciclo completo (elaboración propia): registro, telemetría, suscripción del operador, alerta empujada por el servidor, consulta y baja.](figuras/secuencia.svg)
 
 ## 4. Diseño y especificación del protocolo
 
@@ -79,18 +75,18 @@ mensaje := tipo ( "|" campo )* "\n"
 
 | Origen | Mensaje | Transporte | Respuesta |
 |---|---|---|---|
-| Nodo | `REGISTER\|id\|ubicacion\|VARS` | TCP | `OK\|REGISTERED\|id\|5000` |
-| Nodo | `TELEMETRY\|id\|seq\|VAR\|valor` | UDP | ninguna, o `NACK\|104\|NOT_REGISTERED` |
-| Nodo | `BYE\|id` | TCP | `OK\|BYE` |
-| Operador | `PING` | TCP | `OK\|PONG` |
-| Operador | `LIST_NODES` | TCP | `OK\|NODES\|n`, n líneas `NODE\|…`, `END` |
-| Operador | `GET_STATUS\|id` | TCP | `OK\|STATUS\|id\|estado\|ubicacion\|hace_s\|recibidos\|perdidos\|alertas` |
-| Operador | `GET_LAST\|id` | TCP | `OK\|LAST\|id\|n`, n líneas `MEASURE\|…`, `END` |
-| Operador | `GET_ALERTS[\|max]` | TCP | `OK\|ALERTS\|n`, n líneas `ALERT\|…`, `END` |
-| Operador | `SYSTEM_STATUS` | TCP | `OK\|SYSTEM\|clave=valor;…` |
-| Operador | `SUBSCRIBE_ALERTS` | TCP | `OK\|SUBSCRIBED` y luego `ALERT\|…` cuando ocurran |
-| Operador | `QUIT` | TCP | `OK\|BYE` y cierre |
-| Servidor | `ALERT\|id\|tipo\|valor\|hace_s` | TCP | (empujado a los suscritos) |
+| Nodo | REGISTER\|id\|ubicacion\|VARS | TCP | OK\|REGISTERED\|id\|5000 |
+| Nodo | TELEMETRY\|id\|seq\|VAR\|valor | UDP | ninguna, o NACK\|104\|NOT_REGISTERED |
+| Nodo | BYE\|id | TCP | OK\|BYE |
+| Operador | PING | TCP | OK\|PONG |
+| Operador | LIST_NODES | TCP | OK\|NODES\|n, n líneas NODE\|…, END |
+| Operador | GET_STATUS\|id | TCP | OK\|STATUS\|id\|estado\|ubicacion\|hace_s\|recibidos\|perdidos\|alertas |
+| Operador | GET_LAST\|id | TCP | OK\|LAST\|id\|n, n líneas MEASURE\|…, END |
+| Operador | GET_ALERTS[\|max] | TCP | OK\|ALERTS\|n, n líneas ALERT\|…, END |
+| Operador | SYSTEM_STATUS | TCP | OK\|SYSTEM\|clave=valor;… |
+| Operador | SUBSCRIBE_ALERTS | TCP | OK\|SUBSCRIBED y luego ALERT\|… cuando ocurran |
+| Operador | QUIT | TCP | OK\|BYE y cierre |
+| Servidor | ALERT\|id\|tipo\|valor\|hace_s | TCP | (empujado a los suscritos) |
 
 Las respuestas de varias líneas terminan con `END` para que el cliente sepa dónde acaba la respuesta sin depender de la longitud ni del cierre de la conexión.
 
