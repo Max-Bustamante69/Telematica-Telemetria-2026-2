@@ -220,6 +220,21 @@ El despliegue se hizo con AWS CLI desde CloudShell, con los mismos comandos de `
 | 5001 | TCP | Registro y operadores |
 | 8080 | TCP | Interfaz web |
 
+Comprobación con AWS CLI desde CloudShell el 20 de septiembre de 2026 (salida real, recortada a las columnas relevantes):
+
+```
+$ aws ec2 describe-instances --instance-ids i-042a5b79b2cc1fd8e --output table
+  Id: i-042a5b79b2cc1fd8e   Type: t3.micro   State: running   AZ: us-east-1c
+  Image: ami-025d99823a4caad37 (Ubuntu 24.04)   Key: telemetria-key   SG: telemetria-sg
+  PrivateIp: 172.31.16.159   PublicIp: 100.25.236.127   Launched: 2026-09-20T05:08:41+00:00
+
+$ aws ec2 describe-security-groups --group-ids sg-0061c66974fc07650 --output table
+  tcp 22    0.0.0.0/0
+  udp 5000  0.0.0.0/0
+  tcp 5001  0.0.0.0/0
+  tcp 8080  0.0.0.0/0
+```
+
 [Captura: `evidencias/aws-instancia.png` y `evidencias/aws-security-group.png`.]
 
 ### 7.3 DNS
