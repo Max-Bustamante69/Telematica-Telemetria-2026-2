@@ -429,7 +429,11 @@ Equipo `DESKTOP-J05EGID`, usuario `desktop-j05egid\usuario`, 20 de septiembre de
 
 ### 12.2 Valeria Frances Hornung
 
-[Capturas de Valeria: `evidencias/valeria-1-nodo.png`, `evidencias/valeria-2-operador.png`.]
+Equipo `vals`, usuario `valsaler`, 20 de septiembre de 2026, resolviendo por el DNS de su proveedor (`dns4.telecom.com.co`).
+
+![Figura 11. Nodo NODE21 ejecutado en el equipo de Valeria: whoami, hostname, fecha, resolución DNS, REGISTER por TCP y telemetría por UDP hacia telemetria.digitdeck.co.](../evidencias/valeria-1-nodo.png)
+
+![Figura 12. Cliente operador desde el mismo equipo: nslookup contra el resolvedor de su ISP, LIST_NODES con NODE21 activo, GET_ALERTS y SYSTEM_STATUS contra el servidor en la nube.](../evidencias/valeria-2-operador.png)
 
 ### 12.3 Evidencias del equipo
 

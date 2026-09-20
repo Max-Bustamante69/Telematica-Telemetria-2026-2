@@ -110,13 +110,26 @@ python node\node.py --id NODE06 --server telemetria.digitdeck.co --location "Cal
 
 ### Clip 07: `07-val-fallos.mp4` (1:30)
 
-Preparación: este clip necesita reiniciar el contenedor en la nube. Hay dos formas: Max te pasa por un canal privado el archivo `telemetria-key.pem` y lo guardas en `deploy\aws\`, o Max ejecuta el reinicio cuando tú se lo digas por llamada. Ten a la vista la terminal de NODE01.
-
-19. Empieza a grabar. Lee el texto del clip 3.
-20. Al decir "reinicio el contenedor", ejecuta (o pide a Max que ejecute):
+Preparación: este clip necesita reiniciar el contenedor en la nube. Para eso tienes tu propia llave SSH, limitada a ese único comando. Créala una vez y mándale a Max la línea que imprime el segundo comando (empieza por `ssh-ed25519`):
 
 ```powershell
-ssh -i deploy\aws\telemetria-key.pem ubuntu@telemetria.digitdeck.co "sudo docker restart telemetry-server"
+ssh-keygen -t ed25519 -N '""' -C valeria-telemetria -f $HOME\.ssh\telemetria-valeria
+Get-Content $HOME\.ssh\telemetria-valeria.pub
+```
+
+Cuando Max la autorice, el reinicio es un solo comando, sin contraseña:
+
+```powershell
+ssh -i $HOME\.ssh\telemetria-valeria ubuntu@telemetria.digitdeck.co
+```
+
+Responde "Reiniciando telemetry-server..." y el estado del contenedor. Ten a la vista la terminal de NODE01.
+
+19. Empieza a grabar. Lee el texto del clip 3.
+20. Al decir "reinicio el contenedor", ejecuta:
+
+```powershell
+ssh -i $HOME\.ssh\telemetria-valeria ubuntu@telemetria.digitdeck.co
 ```
 
 21. Mira la terminal de NODE01: en unos 10 segundos salen `UDP <- NACK|104|NOT_REGISTERED` (cinco veces), luego `TCP -> REGISTER|NODE01|...` y `TCP <- OK|REGISTERED|NODE01|5000`, y sigue la telemetría.
