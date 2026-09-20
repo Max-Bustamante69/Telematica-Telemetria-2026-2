@@ -21,7 +21,7 @@ Repositorio privado: https://github.com/Max-Bustamante69/Telematica-Telemetria-2
 
 Video de sustentación: [enlace]
 
-Servidor desplegado: `telemetria.digitdeck.co` (AWS EC2, región `us-east-1`, contenedor Docker).
+Servidor desplegado: `telemetria.digitdeck.co` (AWS EC2 `i-042a5b79b2cc1fd8e`, `t3.micro`, región `us-east-1`, IP elástica `100.25.236.127`, contenedor Docker `telemetry-server`).
 
 ## 2. Introducción y descripción del problema
 
@@ -201,7 +201,7 @@ docker logs -f telemetry-server
 
 ### 7.2 AWS EC2
 
-`deploy/aws/create-instance.sh` crea con AWS CLI el grupo de seguridad, el par de llaves y una instancia `t3.micro` con Ubuntu 24.04. El `user-data` (`deploy/aws/user-data.sh`) instala Docker, clona el repositorio y ejecuta `docker compose up -d --build server`.
+El despliegue se hizo con AWS CLI desde CloudShell, con los mismos comandos de `deploy/aws/create-instance.sh`: importación de la llave pública generada en el equipo local (`ssh-keygen -t ed25519`), grupo de seguridad `telemetria-sg` (`sg-0061c66974fc07650`), instancia `t3.micro` con Ubuntu 24.04 (`i-042a5b79b2cc1fd8e`) y una IP elástica (`100.25.236.127`) para que el registro DNS no cambie si la instancia se reinicia. El `user-data` instala Docker. Como el repositorio es privado, el código se copió con `git archive | ssh` en lugar de clonarlo desde la instancia, y el contenedor se construyó allí con `docker compose up -d --build server` (imagen de 2 etapas, `gcc:14` y `debian:bookworm-slim`). El `HEALTHCHECK` reporta `healthy` a los 15 s.
 
 **Tabla 5.** Reglas de entrada del grupo de seguridad.
 
@@ -268,7 +268,7 @@ El mensaje TLP es la carga útil (capa de aplicación). UDP o TCP añaden puerto
 
 ### 9.1 Suite de extremo a extremo
 
-`tests/e2e.sh <host>` ejecuta 20 comprobaciones. Resultado contra el servidor local el 19 de septiembre de 2026:
+`tests/e2e.sh <host>` ejecuta 20 comprobaciones. Se ejecutó contra el servidor local el 19 de septiembre y contra `telemetria.digitdeck.co` el 20 de septiembre de 2026, con el mismo resultado:
 
 **Tabla 7.** Resultado de `tests/e2e.sh`.
 
@@ -302,9 +302,19 @@ El mensaje TLP es la carga útil (capa de aplicación). UDP o TCP añaden puerto
 | Perdidos en la red | 0 |
 | Tasa | 472 msg/s |
 
+**Tabla 8b.** Prueba de pérdida contra `telemetria.digitdeck.co` (Medellín a Virginia del Norte), 20 de septiembre de 2026.
+
+| Métrica | Valor |
+|---|---|
+| Datagramas transmitidos | 500 |
+| Recibidos por el servidor | 500 |
+| Perdidos según el servidor | 0 |
+| Perdidos en la red | 0 |
+| Tasa | 478 msg/s |
+
 El servidor detecta 9 de los 10 huecos: el último número omitido es el 500, que está al final de la secuencia, y un hueco al final no se puede distinguir de "todavía no ha llegado". Es una limitación inherente a contar por secuencia.
 
-[Repetir contra `telemetria.digitdeck.co` y anotar aquí el resultado: en Internet sí puede haber datagramas perdidos.]
+En Internet no se perdió ningún datagrama en 500 enviados a 478 por segundo. Con una tasa tan baja y una ruta estable la pérdida es rara; el mecanismo de conteo se validó con la prueba local de huecos deliberados.
 
 ### 9.3 Pruebas de la sección 11 del enunciado
 
@@ -320,7 +330,7 @@ El servidor detecta 9 de los 10 huecos: el último número omitido es el 500, qu
 | Funcionamiento concurrente | Hilos por cliente; consultas mientras llega telemetría |
 | Acceso mediante DNS | Línea `DNS: telemetria.digitdeck.co -> IP` en cada cliente |
 | Funcionamiento desde Internet | Nodos y operadores desde los equipos de los tres integrantes |
-| Recuperación ante desconexión o mensaje incorrecto | `docker restart` con nodos activos (NACK y reregistro), Ctrl+C en un nodo, basura por UDP, línea larga por TCP |
+| Recuperación ante desconexión o mensaje incorrecto | `docker restart telemetry-server` con `NODE09` enviando desde Medellín: el nodo recibió 5 `NACK|104` (uno por variable del ciclo), volvió a enviar `REGISTER`, recibió `OK|REGISTERED` y siguió con la telemetría sin intervención (11 s entre el reinicio y el reregistro). Ctrl+C en un nodo, basura por UDP y línea larga por TCP se prueban en `e2e.sh` |
 
 ## 10. Problemas encontrados y soluciones implementadas
 
@@ -332,6 +342,8 @@ El servidor detecta 9 de los 10 huecos: el último número omitido es el 500, qu
 6. **TCP no respeta los límites de mensaje.** Con dos comandos enviados seguidos, un solo `recv()` traía las dos líneas. El hilo de cliente acumula en un búfer y procesa cada `\n` encontrado, guardando el resto para la siguiente lectura.
 7. **Servidor reiniciado con nodos activos.** Tras `docker restart` el servidor pierde el registro (está en memoria). Sin un mecanismo de aviso, la telemetría se descartaría en silencio. Se añadió el `NACK|104` por UDP y el reregistro automático del nodo.
 8. **Docker Desktop en Windows no arrancó el motor durante el desarrollo.** La compilación y las pruebas se hicieron en WSL 2 (Ubuntu 22.04, gcc 11.4) y la imagen se construyó en la instancia EC2, donde Docker corre de forma nativa.
+9. **El repositorio privado no se puede clonar desde la instancia sin credenciales.** En lugar de guardar un token en la instancia, el código se envía con `git archive --format=tar HEAD | ssh ubuntu@... tar -x`. Un cambio se despliega repitiendo ese comando y `docker compose up -d --build server`.
+10. **El puerto 8080 de Windows estaba ocupado por otro servicio local.** La interfaz web del servidor en WSL se probó por la IP interna de WSL; en la nube no hay conflicto.
 
 [Añadir los problemas que encuentre el equipo durante el despliegue y las capturas.]
 
