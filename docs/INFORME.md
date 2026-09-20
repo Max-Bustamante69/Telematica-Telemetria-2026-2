@@ -235,7 +235,7 @@ $ aws ec2 describe-security-groups --group-ids sg-0061c66974fc07650 --output tab
   tcp 8080  0.0.0.0/0
 ```
 
-[Captura: `evidencias/aws-instancia.png` y `evidencias/aws-security-group.png`.]
+![Figura 9. AWS CloudShell en la cuenta del equipo: describe-instances, reglas de entrada del grupo de seguridad y la IP elástica asociada a la instancia.](../evidencias/aws-instancia-security-group.png)
 
 ### 7.3 DNS
 
@@ -254,7 +254,7 @@ $ python node/node.py --id NODE09 --server telemetria.digitdeck.co
 00:16:18 TCP <- OK|REGISTERED|NODE09|5000
 ```
 
-[Captura: `evidencias/dns-cloudflare.png` y `evidencias/dns-nslookup.png`.]
+![Figura 10. Panel DNS de Cloudflare para digitdeck.co: registro A telemetria con 100.25.236.127 y proxy desactivado (DNS only).](../evidencias/dns-cloudflare.png)
 
 ### 7.4 Interfaz web desde Internet
 
