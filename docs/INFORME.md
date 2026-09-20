@@ -3,8 +3,7 @@ title: "Plataforma distribuida de telemetría y gestión de infraestructura inte
 subtitle: "Informe técnico · Telemática / Internet: Arquitectura y Protocolos · 2026-2"
 author:
   - "Maximiliano Bustamante"
-  - "[Integrante 2]"
-  - "[Integrante 3]"
+  - "Valeria Frances Hornung"
 date: "20 de septiembre de 2026"
 lang: es
 ---
@@ -14,8 +13,7 @@ lang: es
 | Integrante | Correo | Parte desarrollada |
 |---|---|---|
 | Maximiliano Bustamante | mbustamang@eafit.edu.co | [ajustar] |
-| [Integrante 2] | [correo] | [ajustar] |
-| [Integrante 3] | [correo] | [ajustar] |
+| Valeria Frances Hornung | vvhornung@eafit.edu.co | [ajustar] |
 
 Repositorio privado: https://github.com/Max-Bustamante69/Telematica-Telemetria-2026-2
 
@@ -400,10 +398,10 @@ En Internet no se perdió ningún datagrama en 500 enviados a 478 por segundo. C
 
 ![Captura](../evidencias/max-1-nodo.png)
 
-### 12.2 [Integrante 2]
+### 12.2 Valeria Frances Hornung
 
-### 12.3 [Integrante 3]
+[Capturas de Valeria: `evidencias/valeria-1-nodo.png`, `evidencias/valeria-2-operador.png`.]
 
-### 12.4 Evidencias del equipo
+### 12.3 Evidencias del equipo
 
 Despliegue en nube, Docker, DNS y Wireshark: ver las capturas referenciadas en las secciones 7 y 8.

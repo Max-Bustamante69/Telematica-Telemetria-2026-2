@@ -1,6 +1,6 @@
 # Guion del video de sustentación (15 a 18 minutos)
 
-Tres integrantes: A, B y C. Cada uno explica y demuestra la parte que desarrolló. Grabar con la pantalla compartida y la cámara de quien habla. El video muestra ejecución real, no solo diapositivas.
+Integrantes: A = Maximiliano, B = Valeria, C = tercer integrante si lo hay (si son dos, C se reparte entre A y B). Cada uno explica y demuestra la parte que desarrolló. Grabar con la pantalla compartida y la cámara de quien habla. El video muestra ejecución real, no solo diapositivas.
 
 | Minuto | Quién | Qué se muestra | Cómo se demuestra |
 |---|---|---|---|
