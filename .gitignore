@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+server/build/
+.env
+*.pem
+captures/*.pcapng
