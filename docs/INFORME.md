@@ -17,7 +17,7 @@ lang: es
 
 Repositorio privado: https://github.com/Max-Bustamante69/Telematica-Telemetria-2026-2
 
-Video de sustentación: `sustentacion-telemetria-1080p.mp4` (18:05, 1080p, subtítulos quemados; `.srt` y `.vtt` en `docs/video/`). Enlace: [se añade al subir el video]
+Video de sustentación: `sustentacion-telemetria-v2-1080p.mp4` (18:05, 1080p, subtítulos quemados; `.srt` y `.vtt` en `docs/video/`). Enlace: [se añade al subir el video]
 
 Servidor desplegado: `telemetria.digitdeck.co` (AWS EC2 `i-042a5b79b2cc1fd8e`, `t3.micro`, región `us-east-1`, IP elástica `100.25.236.127`, contenedor Docker `telemetry-server`).
 
