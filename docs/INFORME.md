@@ -435,6 +435,18 @@ Equipo `vals`, usuario `valsaler`, 20 de septiembre de 2026, resolviendo por el
 
 ![Figura 12. Cliente operador desde el mismo equipo: nslookup contra el resolvedor de su ISP, LIST_NODES con NODE21 activo, GET_ALERTS y SYSTEM_STATUS contra el servidor en la nube.](../evidencias/valeria-2-operador.png)
 
+Las pruebas de la sección 11 del enunciado, ejecutadas desde el equipo de Valeria contra el servidor en la nube:
+
+![Figura 13. Interfaz web con los cinco nodos NODE01 a NODE05 lanzados desde el equipo de Valeria en estado ACTIVE.](../evidencias/valeria-3-web.png)
+
+![Figura 14. Cliente operador suscrito con SUBSCRIBE_ALERTS recibiendo alertas TEMP_HIGH en tiempo real desde un nodo con --force-alert TEMP.](../evidencias/valeria-4-alerta.png)
+
+![Figura 15. Nodo NODE01 durante un docker restart del servidor: NACK|104 por cada variable, nuevo REGISTER y OK|REGISTERED sin intervención.](../evidencias/valeria-5-reinicio.png)
+
+![Figura 16. Suite tests/e2e.sh ejecutada desde el equipo de Valeria contra telemetria.digitdeck.co: comprobaciones 1 a 9 en verde (TCP, cinco nodos, consultas, errores 100 a 103, alerta, NACK, datagramas malformados, línea larga e interfaz web).](../evidencias/valeria-6-e2e.png)
+
+La prueba de conteo (`tests/loss_test.py`) se reporta en la tabla 8b de la sección 9.
+
 ### 12.3 Evidencias del equipo
 
 Despliegue en nube, Docker, DNS y Wireshark: ver las capturas referenciadas en las secciones 7 y 8.
