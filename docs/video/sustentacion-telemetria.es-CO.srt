@@ -1,0 +1,1327 @@
+1
+00:00:00,017 --> 00:00:04,227
+Hola, profesor, como estás somos
+Maximiliano Tamanty Val
+
+2
+00:00:04,227 --> 00:00:07,517
+eria Hornung y estaremos presentando
+
+3
+00:00:07,517 --> 00:00:10,047
+nuestro proyecto de telemática el cual se
+trata una
+
+4
+00:00:10,047 --> 00:00:12,997
+plataforma distribuida de telemetría en la
+
+5
+00:00:12,997 --> 00:00:15,537
+que el problema principal se basa en una
+organización con
+
+6
+00:00:15,537 --> 00:00:19,917
+instalaciones en varios lugares en los que
+cada uno de los lugares tiene sensores
+
+7
+00:00:20,006 --> 00:00:23,076
+que reportan la temperatura, la humedad,
+el consumo de
+
+8
+00:00:23,076 --> 00:00:26,246
+energía, la vibración y el estado de cada
+uno de los equipos.
+
+9
+00:00:26,246 --> 00:00:30,166
+Todo esto tiene que llegar a un servidor
+central en la nube
+
+10
+00:00:30,166 --> 00:00:33,526
+y que un operador por medio de este
+sistema
+
+11
+00:00:33,526 --> 00:00:37,476
+sea capaz de consultar cualquier
+dispositivo y recibir
+
+12
+00:00:37,476 --> 00:00:39,566
+alguna alerta dependiendo de
+
+13
+00:00:39,995 --> 00:00:44,995
+algún estado en específico o algún trigger
+que se vea activado.
+
+14
+00:00:44,995 --> 00:00:49,575
+Los nodos de telemetría están en Python y
+simulan todos
+
+15
+00:00:49,575 --> 00:00:51,755
+estos sensores y el servidor
+
+16
+00:00:51,755 --> 00:00:57,755
+central está escrito en C como parte de
+requisito de la entrega.
+
+17
+00:00:57,755 --> 00:00:59,985
+Todo esto está corriendo por medio de un
+código.
+
+18
+00:00:59,985 --> 00:01:05,625
+contener docker y una instancia de Amazon
+EC2. El operador
+
+19
+00:01:05,625 --> 00:01:06,825
+de todo eso también estaría
+
+20
+00:01:06,825 --> 00:01:11,035
+en python y los nodos se encuentran por
+medio de un nombre
+
+21
+00:01:11,035 --> 00:01:13,665
+de nes. La telemetría sería
+
+22
+00:01:13,665 --> 00:01:17,915
+telemetria.digitdeck.co que es el proyecto
+que contiene la
+
+23
+00:01:17,915 --> 00:01:23,445
+dirección ip y si usted este dominio
+porque es parte pues de una empresa personal
+
+24
+00:01:23,445 --> 00:01:24,815
+que yo tengo y pues ya que lo tengo
+
+25
+00:01:24,815 --> 00:01:29,215
+disponible me parece bastante práctico
+ponerlo en uso.
+
+26
+00:01:29,501 --> 00:01:33,001
+Bueno, ahora hablando un poco más sobre el
+protocolo que
+
+27
+00:01:33,001 --> 00:01:36,151
+diseñamos, diseñamos un protocolo de
+aplicación propio que
+
+28
+00:01:36,151 --> 00:01:39,711
+va por texto, el cual se llama TLP, porque
+las siglas
+
+29
+00:01:39,711 --> 00:01:42,501
+terminarían significando telemetry line
+protocol.
+
+30
+00:01:42,501 --> 00:01:46,511
+Cada mensaje va separado por un salto de
+línea y los campos
+
+31
+00:01:46,511 --> 00:01:49,489
+van separados todos por barras verticales
+que son
+
+32
+00:01:49,489 --> 00:01:53,889
+aquellas barras verticales. El primer
+campo que se utiliza sería para poder
+
+33
+00:01:53,889 --> 00:01:55,969
+identificar qué tipo de mensaje es el que
+están viendo.
+
+34
+00:01:55,969 --> 00:01:58,289
+Entonces un nodo se registraría primero
+
+35
+00:01:58,289 --> 00:02:01,589
+que nada con la palabra register,
+científicador, su ubic
+
+36
+00:02:01,589 --> 00:02:03,729
+ación y la lista de variables que este
+tiene
+
+37
+00:02:03,729 --> 00:02:07,089
+dentro. Y el servidor respondería con OK
+REGISTEREDed con el
+
+38
+00:02:07,089 --> 00:02:09,479
+puerto UDP. Después el nodo
+
+39
+00:02:09,479 --> 00:02:12,259
+envía telemetry que sería el
+identificador, número de sec
+
+40
+00:02:12,259 --> 00:02:14,399
+uencia, variable y valor y un
+
+41
+00:02:14,399 --> 00:02:17,549
+datagrama por cada variable que se está
+compartiendo y el
+
+42
+00:02:17,549 --> 00:02:20,319
+operador consulta con los comandos que
+
+43
+00:02:20,319 --> 00:02:23,679
+serían LIST_NODES para todos los nodes,
+GET_LAST para el
+
+44
+00:02:23,679 --> 00:02:26,159
+último node agregado y GET_STATUS para
+
+45
+00:02:26,159 --> 00:02:29,468
+el estatus global. Las respuestas también
+
+46
+00:02:29,468 --> 00:02:32,978
+bien terminan en END pues que sería pues
+como el salto de
+
+47
+00:02:32,978 --> 00:02:34,428
+línea para poder separar bien los
+
+48
+00:02:34,428 --> 00:02:38,038
+mensajes. Ahora, en cuanto a los errores
+tenemos varios
+
+49
+00:02:38,038 --> 00:02:40,948
+errores, el 100 significa que el formato
+
+50
+00:02:40,948 --> 00:02:44,288
+que se envía es incorrecto, el 101 que es
+un comando que es
+
+51
+00:02:44,288 --> 00:02:48,828
+desconocido, el 100 sería intentando
+consultar uno no conocido
+
+52
+00:02:49,459 --> 00:02:53,119
+103 que es un parámetro inválido, 104 que
+es un no regist
+
+53
+00:02:53,119 --> 00:02:56,699
+rado, 105 que la línea de consulta es
+demasiado larga y el
+
+54
+00:02:56,699 --> 00:02:58,459
+106 que el servidor está lleno.
+
+55
+00:02:58,459 --> 00:03:04,099
+La telemetría va por UDP porque cada nodo
+manda 5 datagramas por
+
+56
+00:03:04,099 --> 00:03:09,448
+cada segundo, entonces realmente perder un
+dato realmente no importa mucho.
+
+57
+00:03:09,448 --> 00:03:11,828
+el número de secuencias nos permite contar
+exactamente
+
+58
+00:03:11,828 --> 00:03:14,108
+cuántos nodos se han perdido, cuántos
+
+59
+00:03:14,108 --> 00:03:17,428
+diómes se han perdido y el registro de las
+consultas de las
+
+60
+00:03:17,428 --> 00:03:22,068
+alertas van por TCP porque necesitan
+confirmación y una orden.
+
+61
+00:03:22,068 --> 00:03:26,768
+Además de una alerta pues de pérdida en
+caso de que alguien
+
+62
+00:03:26,768 --> 00:03:28,268
+no haya atendido.
+
+63
+00:03:29,026 --> 00:03:33,026
+Ahora hablando un poco más acerca de ese
+cerebro central el
+
+64
+00:03:33,026 --> 00:03:35,266
+cual sería el servidor que se escribió en
+C
+
+65
+00:03:37,186 --> 00:03:41,306
+La implementación en específico está hecho
+con POSIX para poder hacer los
+
+66
+00:03:41,306 --> 00:03:45,346
+objetos para poder tener la comunicación
+entre los nodos
+
+67
+00:03:45,346 --> 00:03:48,986
+tiene dos sockets: uno TCP en el puerto
+5001
+
+68
+00:03:49,015 --> 00:03:54,095
+el cual hace socket bind y accept y por
+cada cliente que
+
+69
+00:03:54,095 --> 00:03:59,295
+entra en nuevo crea un hilo ese hilo lo
+que hace es leer hasta encontrar el salto de
+
+70
+00:03:59,295 --> 00:04:01,335
+línea entonces cuando llega el salto de
+
+71
+00:04:01,335 --> 00:04:05,325
+línea sabe que tiene un mensaje esto
+porque en TCP un mens
+
+72
+00:04:05,325 --> 00:04:08,655
+aje puede llegar partido en dos mensajes
+
+73
+00:04:09,004 --> 00:04:14,584
+y por lo tanto se tiene que hacer este
+desalto de línea,
+
+74
+00:04:14,584 --> 00:04:15,244
+esta división.
+
+75
+00:04:15,244 --> 00:04:19,514
+El otro socket es UDP y está en el puerto
+5000 y este lo
+
+76
+00:04:19,514 --> 00:04:23,404
+que recibe es cada datagrama con la
+telemetría
+
+77
+00:04:23,404 --> 00:04:28,924
+con recvfrom y solo responde con sendto.
+Esto lo hace cuando el no no está
+
+78
+00:04:28,994 --> 00:04:32,864
+registrado es la primera vez que se
+comunica. Todo el
+
+79
+00:04:32,864 --> 00:04:35,434
+estado, nodos, mediciones y alertas
+
+80
+00:04:35,434 --> 00:04:39,104
+están en memoria y protegidos por un
+mutex, porque varios h
+
+81
+00:04:39,104 --> 00:04:40,994
+ilos lo están tocando puesto
+
+82
+00:04:40,994 --> 00:04:45,644
+el rato y dos detalles de robustez sería
+que ignoramos la
+
+83
+00:04:45,644 --> 00:04:48,984
+señal SIGPIPE para que un operador que
+cierran
+
+84
+00:04:48,984 --> 00:04:52,104
+mitad de una respuesta no tumbe el
+servidor inmediatamente
+
+85
+00:04:52,104 --> 00:04:55,504
+y al recibir SIGTERM cerramos
+
+86
+00:04:55,504 --> 00:04:58,404
+los sockets de escucha eso para que los
+hilos despierten y el
+
+87
+00:04:58,404 --> 00:05:00,664
+proceso termine más limpio.
+
+88
+00:05:00,664 --> 00:05:03,774
+El servidor también está corriendo dentro
+de docker para
+
+89
+00:05:03,774 --> 00:05:08,944
+poder tener todo contenerizado sin ningún
+tipo de conflictos y aquí es el video.
+
+90
+00:05:08,974 --> 00:05:12,744
+estaría al docker.ps en la instancia. El
+contador está
+
+91
+00:05:12,744 --> 00:05:14,774
+arriba y el healthcheck dice healthy.
+
+92
+00:05:15,500 --> 00:05:21,440
+y por último tendríamos más que nada un
+poco la explicación de la nube, el
+
+93
+00:05:21,440 --> 00:05:26,280
+DNS, el docker y como está configurado
+todo para que corra de manera remota.
+
+94
+00:05:26,280 --> 00:05:32,020
+El servidor está en Amazon EC2, es una
+instancia T3 Micro con Ubuntu en
+
+95
+00:05:32,020 --> 00:05:35,493
+Virginia del Norte, todo lo que se nos ha
+enseñado en la clase.
+
+96
+00:05:35,493 --> 00:05:38,973
+sobre el que lo he recomendado para poder
+tener nuestro propio servidor.
+
+97
+00:05:38,973 --> 00:05:43,673
+El grupo de seguridad abre solamente
+cuatro puertos, el 22
+
+98
+00:05:43,673 --> 00:05:46,413
+para el SSH, el 5000 para el UDP,
+
+99
+00:05:46,413 --> 00:05:51,253
+que sería destinado por la telemetría, el
+5001 para el TCP
+
+100
+00:05:51,253 --> 00:05:55,453
+, para los operadores, poder realizar las
+consultas y el 8080 para el UDP.
+
+101
+00:05:55,483 --> 00:06:00,623
+por tener la interfaz web. La instancia
+tiene una IP elást
+
+102
+00:06:00,623 --> 00:06:06,403
+ica 100.25.236.127.
+
+103
+00:06:06,403 --> 00:06:12,323
+Esta no cambia aunque se reinicie, siempre
+para que sea la
+
+104
+00:06:12,323 --> 00:06:14,643
+100.25.236.127
+
+105
+00:06:15,472 --> 00:06:20,592
+y el nombre de telemetría punto digitdeck
+punto co es el
+
+106
+00:06:20,592 --> 00:06:23,852
+registro A de Cloudflare que apunta la
+dirección y p todo esto
+
+107
+00:06:23,852 --> 00:06:29,062
+puede ser configurado con el proxy apagado
+porque el prox
+
+108
+00:06:29,062 --> 00:06:31,192
+ie clover solamente va a pasar el
+
+109
+00:06:31,192 --> 00:06:35,352
+http lo compramos en vivo con el
+
+110
+00:06:35,462 --> 00:06:42,342
+Enzlookup, el nombre vuelve
+100.25.236.127, ningún archivo
+
+111
+00:06:42,342 --> 00:06:47,562
+del proyecto tiene la IP escrita y para
+desplegar el código se copia la instancia por
+
+112
+00:06:47,562 --> 00:06:52,662
+ssh, se construye un docker compose y la
+imagen tiene las dos etapas, una con la gcc
+
+113
+00:06:52,662 --> 00:06:54,742
+que compila y otra con Debian,
+
+114
+00:06:55,452 --> 00:07:01,902
+que es como que lleva el binario y pesa
+solamente 114 meg
+
+115
+00:07:01,902 --> 00:07:02,702
+abytes
+
+116
+00:07:03,000 --> 00:07:06,849
+Bueno, profe, mi nombre es Valeria Hornung
+y en este caso
+
+117
+00:07:06,849 --> 00:07:09,604
+voy a estar hablando pues de los nodos de
+telemetría.
+
+118
+00:07:09,604 --> 00:07:12,783
+Entonces, antes que nada, para mencionar
+que los nodos
+
+119
+00:07:12,783 --> 00:07:18,094
+están escritos en Python, cada uno de los
+que tienes un identificador único,
+
+120
+00:07:18,094 --> 00:07:21,857
+vamos a simular en este caso 5 nodos.
+
+121
+00:07:21,857 --> 00:07:26,989
+Entonces, tengo cinco terminales, acá ya
+metidas dentro del proyecto.
+
+122
+00:07:28,498 --> 00:07:33,819
+Lo que pasa, antes que nada, se resuelve
+el nombre del servidor con getaddrinfo.
+
+123
+00:07:34,574 --> 00:07:37,517
+La primera línea de la salida que vamos a
+ver ahorita,
+
+124
+00:07:37,517 --> 00:07:40,423
+siempre muestra el nombre y la IP que
+obtuvo.
+
+125
+00:07:40,715 --> 00:07:43,800
+Luego lo que hace ahí es que se registra
+por TCP con
+
+126
+00:07:43,800 --> 00:07:46,942
+register y ya se espera con el OK
+REGISTERED
+
+127
+00:07:46,942 --> 00:07:51,611
+igualmente pues eso ya lo vamos a ver. A
+partir de ahí por
+
+128
+00:07:51,611 --> 00:07:54,640
+UDP, o sea lo que hace es que se envía
+
+129
+00:07:54,640 --> 00:07:59,357
+por medio de UDP, perdón, lo que se envía
+son 5 datagramas cada 2 segundos.
+
+130
+00:07:59,573 --> 00:08:03,148
+uno por variable. Entonces eso es con un
+número de sec
+
+131
+00:08:03,148 --> 00:08:05,120
+uencia que va creciendo de 1, 1, 1.
+
+132
+00:08:06,101 --> 00:08:09,903
+Si el servidor se reinicia, lo que pasa es
+que se pierde, o
+
+133
+00:08:09,903 --> 00:08:11,988
+sea, pues si reinicia o digamos que se
+perdió el registro,
+
+134
+00:08:12,516 --> 00:08:14,403
+responde con un NACK 104 por UDP.
+
+135
+00:08:14,931 --> 00:08:18,403
+Y lo que pasa es que el nodo se vuelve a
+registrar solo.
+
+136
+00:08:18,430 --> 00:08:21,732
+así en intervención. Entonces ya pues,
+habiendo como
+
+137
+00:08:21,732 --> 00:08:23,826
+contextualizado un poco, voy a enviar los
+
+138
+00:08:23,826 --> 00:08:28,798
+5 nodos para mostrar más o menos cómo se
+visualmente se
+
+139
+00:08:28,798 --> 00:08:30,242
+proceso.
+
+140
+00:08:37,289 --> 00:08:44,902
+Entonces acá tenemos el DNS:
+telemetria.digitdeck.co y acá está el register
+
+141
+00:08:44,902 --> 00:08:49,440
+y ya cuando pasa lo que REGISTER ya
+empieza a hacer esa carta.
+
+142
+00:08:49,440 --> 00:08:53,666
+Entonces si vamos a la web, pues podemos
+recargar para
+
+143
+00:08:53,666 --> 00:08:56,146
+demostrarlo, acá están los
+
+144
+00:08:56,146 --> 00:09:02,882
+nodos, no pues en el bodega sur, esos fue
+los que agregamos
+
+145
+00:09:02,882 --> 00:09:04,561
+, aparecen pues los 5 y todos
+
+146
+00:09:04,561 --> 00:09:08,137
+están en estado activo, con el contador de
+datagramas están
+
+147
+00:09:08,137 --> 00:09:12,750
+recibidos, subiendo y tenemos 0 perdidos.
+
+148
+00:09:12,750 --> 00:09:14,750
+Entonces ese es el caso de los nodos.
+
+149
+00:09:14,604 --> 00:09:18,094
+Y listo, en este caso ya con el cliente
+operador y las
+
+150
+00:09:18,094 --> 00:09:22,302
+alertas, lo que hacemos es que con el
+cliente operador se
+
+151
+00:09:22,302 --> 00:09:25,925
+conecta con TCP y en este caso estamos en
+el puerto 5001.
+
+152
+00:09:25,925 --> 00:09:30,642
+Entonces ya lo que podemos hacer es que
+con LIST_NODES
+
+153
+00:09:30,642 --> 00:09:33,460
+podemos ver básicamente todos los nodes.
+
+154
+00:09:33,460 --> 00:09:36,677
+que tenemos registrados, tenemos la
+ubicación, si están
+
+155
+00:09:36,677 --> 00:09:38,743
+activos, cuántos datagramas han recibido y
+
+156
+00:09:38,743 --> 00:09:41,385
+perdido a cada uno. Entonces podemos ver
+que los 5 nodos
+
+157
+00:09:41,385 --> 00:09:42,819
+que habíamos ahorita son los que
+
+158
+00:09:42,819 --> 00:09:47,083
+están activos, bodegasur, bueno, todos
+están activos,
+
+159
+00:09:47,083 --> 00:09:49,385
+tenemos los recibidos, lo que se perdió.
+
+160
+00:09:52,319 --> 00:09:56,168
+Con GET_LAST y un identificador
+
+161
+00:09:56,168 --> 00:09:58,357
+podemos ver las últimas mediciones de ese
+nodo,
+
+162
+00:09:58,357 --> 00:10:02,045
+entonces tenemos todos los datos de el
+NODE03 que fue uno
+
+163
+00:10:02,045 --> 00:10:03,866
+de los que activamos ahorita.
+
+164
+00:10:05,451 --> 00:10:09,196
+También tenemos GET_STATUS, obviamente es
+para ver su estado
+
+165
+00:10:09,196 --> 00:10:11,074
+, podemos ver el estado del NODE01,
+
+166
+00:10:11,176 --> 00:10:16,308
+está activo, es también otro de los que
+agregamos ahorita.
+
+167
+00:10:16,308 --> 00:10:19,856
+Tenemos SYSTEM_STATUS, que pues
+
+168
+00:10:19,856 --> 00:10:23,327
+SYSTEM_STATUS básicamente lo que hace es
+resumir el serv
+
+169
+00:10:23,327 --> 00:10:26,233
+idor. Entonces nos muestra el tiempo
+activo,
+
+170
+00:10:26,233 --> 00:10:30,007
+no operadores conectados y contadores de
+UDP y de
+
+171
+00:10:30,034 --> 00:10:33,958
+TCP, entonces tenemos unos activos,
+udp_lost, udp_rejected,
+
+172
+00:10:33,958 --> 00:10:35,091
+bueno, entonces tenemos esos datos.
+
+173
+00:10:35,091 --> 00:10:40,147
+Si escribió un comando que no existe, el
+servidor responde con error...
+
+174
+00:10:42,034 --> 00:10:44,581
+101, igual a la escala vamos a usar,
+entonces error 1,
+
+175
+00:10:44,581 --> 00:10:48,751
+0, 1, no un comando. Y si preguntó,
+
+176
+00:10:48,892 --> 00:10:55,760
+un node que no existe. Por ejemplo, no se
+un NODE99, si
+
+177
+00:10:55,760 --> 00:10:56,440
+pues 90, no existe, entonces
+
+178
+00:10:56,440 --> 00:11:01,732
+sale error 102, un node no. Ahora, lo que
+puedo hacer
+
+179
+00:11:01,732 --> 00:11:02,930
+es que me va a suscribir
+
+180
+00:11:02,930 --> 00:11:07,685
+a las alertas, entonces hacemos
+SUBSCRIBE_ALERTS.
+
+181
+00:11:07,750 --> 00:11:15,052
+y ahora en otra terminal lanzó un nodo con
+la opción de
+
+182
+00:11:15,052 --> 00:11:16,542
+force-alert
+
+183
+00:11:16,542 --> 00:11:24,656
+este que es el nodo 6 y pues este lo estoy
+lanzando con la
+
+184
+00:11:24,656 --> 00:11:29,438
+opción de force-alert TEMP que manda
+temperaturas por encima de 40 grados.
+
+185
+00:11:30,381 --> 00:11:33,211
+Si se está corriendo, alerta.
+
+186
+00:11:33,211 --> 00:11:35,098
+Entonces ahora...
+
+187
+00:11:35,098 --> 00:11:36,985
+Si se está...
+
+188
+00:11:36,985 --> 00:11:38,872
+Podemos ver que...
+
+189
+00:11:38,872 --> 00:11:43,589
+O sea, está apareciendo acá la alerta en
+tiempo real de la TEMP_HIGH.
+
+190
+00:11:43,589 --> 00:11:45,466
+HUM_HIGH, TEMP_HIGH...
+
+191
+00:11:45,466 --> 00:11:47,353
+estamos usando las alertas.
+
+192
+00:11:47,353 --> 00:11:53,013
+Entonces ya viendo en la web encargamos,
+acá tenemos el
+
+193
+00:11:53,013 --> 00:11:58,674
+9.06 y la alerta reciente está apareciendo
+el error de "TEMP_HIGH"
+
+194
+00:11:58,674 --> 00:12:04,324
+entonces como estamos usando pues recibe
+"GET_ALERTS" y todos
+
+195
+00:12:04,324 --> 00:12:09,588
+entonces tomando en cuenta que llega solo
+al operador por la misma conexión de TCP
+
+196
+00:12:09,588 --> 00:12:12,758
+entonces acá confirmamos que va a tomar la
+captura
+
+197
+00:12:12,758 --> 00:12:17,097
+y confirmamos con el NODE06 agregado que
+tiene pues el alerta de TEMP_HIGH
+
+198
+00:12:17,151 --> 00:12:20,745
+Listo, ahora para la recuperación ante
+fallos y pruebas,
+
+199
+00:12:20,745 --> 00:12:23,377
+pues bueno vamos a hacer las pruebas de
+recuperación.
+
+200
+00:12:23,377 --> 00:12:27,755
+Entonces con los nodos enviando en esos
+momentos tengo los seis nodos que creamos.
+
+201
+00:12:27,755 --> 00:12:33,113
+Voy a reiniciar el contenedor con SSH por
+medio de docker
+
+202
+00:12:33,113 --> 00:12:34,170
+restart.
+
+203
+00:12:34,170 --> 00:12:35,830
+Entonces acá está reiniciando.
+
+204
+00:12:36,008 --> 00:12:42,102
+Y acá podemos ver que el nodo recibe 5
+NACK 104 que puedes
+
+205
+00:12:42,102 --> 00:12:43,630
+uno por cada variable del ciclo.
+
+206
+00:12:43,630 --> 00:12:48,074
+Entonces envía REGISTER otra vez y de ahí
+recibe ok
+
+207
+00:12:48,074 --> 00:12:50,196
+register y sigue con la telemetría.
+
+208
+00:12:50,196 --> 00:12:54,838
+Entonces son como unos 11 segundos entre
+el reinicio y el registro.
+
+209
+00:12:54,866 --> 00:12:56,904
+O sea, ahí se pudo ver sin tocar nada.
+
+210
+00:12:59,055 --> 00:13:00,187
+Otra cosa es que...
+
+211
+00:13:00,300 --> 00:13:02,338
+Este es el NODE05, creo.
+
+212
+00:13:03,017 --> 00:13:05,960
+Sí, otra cosa es que con Control + C.
+
+213
+00:13:08,338 --> 00:13:11,206
+Si tengo un nuevo, pues con Control + C,
+manda BYE por TCP.
+
+214
+00:13:11,394 --> 00:13:13,724
+He notado que no se ve por la cámara.
+
+215
+00:13:13,724 --> 00:13:18,997
+Ya, entonces como dije, si tengo el no con
+control C va a
+
+216
+00:13:18,997 --> 00:13:24,610
+mandar bye acá por TCP y pues si listamos,
+yo voy a volar
+
+217
+00:13:24,610 --> 00:13:29,459
+acá, si listamos los nodos, ese NODE05 que
+acabamos de cancelar
+
+218
+00:13:29,459 --> 00:13:30,705
+es inactivo.
+
+219
+00:13:30,705 --> 00:13:32,581
+también pues lo que ha de.
+
+220
+00:13:32,581 --> 00:13:36,958
+es que le enviamos datagramas basuras y
+una línea 700 bytes
+
+221
+00:13:36,958 --> 00:13:38,581
+por TCP. Lo que hace es que el
+
+222
+00:13:38,581 --> 00:13:41,072
+servidor los cuenta como invalidos y él
+sigue respondiendo.
+
+223
+00:13:41,072 --> 00:13:44,958
+Bueno pues esto se lo estamos
+
+224
+00:13:44,958 --> 00:13:51,223
+automatizando con tests/e2e.sh. Lo que
+hace es que corre varios test
+
+225
+00:13:51,223 --> 00:13:51,440
+.
+
+226
+00:13:51,440 --> 00:13:53,326
+no va a correr en estos momentos.
+
+227
+00:13:53,326 --> 00:13:57,100
+Son 20 comprobaciones contra el servidor
+en la nube.
+
+228
+00:13:57,100 --> 00:13:59,930
+Entonces, acá la está corriendo.
+
+229
+00:14:03,704 --> 00:14:07,477
+Es un poquito demorado. Igualmente ahorita
+metimos ese NODE06,
+
+230
+00:14:07,477 --> 00:14:10,297
+que era para dar a la gente.
+
+231
+00:14:10,297 --> 00:14:15,203
+hacer esa comprobación del high
+temperatures y también
+
+232
+00:14:15,203 --> 00:14:21,316
+tenemos acá la prueba de conteo
+
+233
+00:14:21,316 --> 00:14:28,052
+entonces acá empezó la prueba de conteo
+los test envían 500
+
+234
+00:14:28,052 --> 00:14:28,939
+perdón que están
+
+235
+00:14:29,155 --> 00:14:34,834
+500 datagramas enumerados a 478 por
+segundo.
+
+236
+00:14:34,834 --> 00:14:37,192
+Desde Medellín hasta Virginia.
+
+237
+00:14:37,192 --> 00:14:42,060
+El servidor los recibe y no detectó ningún
+hueco en la secuencia.
+
+238
+00:14:42,245 --> 00:14:47,274
+Listo, ahora voy a hablar del análisis de
+tráfico de Wehr
+
+239
+00:14:47,274 --> 00:14:47,925
+schark.
+
+240
+00:14:47,925 --> 00:14:51,962
+Esta captura se tomó en mi equipo mientras
+uno de un oper
+
+241
+00:14:51,962 --> 00:14:55,094
+ador estaba hablando con el servidor de la
+nube.
+
+242
+00:14:55,094 --> 00:14:57,962
+Entonces ya el primer filtro.
+
+243
+00:14:57,962 --> 00:15:01,102
+El primer filtro es un filtro de P.
+
+244
+00:15:01,102 --> 00:15:04,762
+con portico a las 5.000 lo que estoy
+viendo del datagrama
+
+245
+00:15:04,762 --> 00:15:06,875
+de telemetría.
+
+246
+00:15:06,875 --> 00:15:12,875
+Entonces, por ejemplo acá tengo una IP
+privada de 190,
+
+247
+00:15:12,875 --> 00:15:15,366
+de unos 680, 5830.
+
+248
+00:15:15,366 --> 00:15:19,932
+Tengo un destino que es este
+100.25.236.127.
+
+249
+00:15:19,960 --> 00:15:24,253
+También tengo un puerto de origen efímero
+que es este que
+
+250
+00:15:24,253 --> 00:15:27,508
+es bueno 49921
+
+251
+00:15:28,451 --> 00:15:34,111
+También tengo el puerto destino 5000 La
+longitud de UDP es de 37
+
+252
+00:15:35,055 --> 00:15:37,885
+Que son 8 bytes de cabecera, o sea más de
+29
+
+253
+00:15:38,818 --> 00:15:46,431
+de datos y en los bytes pues la data en
+los bytes tengo 29
+
+254
+00:15:46,431 --> 00:15:49,422
+y se lee el texto pues acá realmente
+
+255
+00:15:49,422 --> 00:15:53,573
+se está leyendo el texto
+TELEMETRY|NODE12|1|TEMP|24.5 que
+
+256
+00:15:53,573 --> 00:15:57,233
+después porque es debido a que nos metimos
+en el del filtro al 9 12
+
+257
+00:15:57,675 --> 00:16:03,392
+Listo, ya tenemos también otro filtro que
+es el de conexión
+
+258
+00:16:03,392 --> 00:16:04,883
+TCP con el operador.
+
+259
+00:16:04,883 --> 00:16:11,081
+Entonces bueno este es el filtro,
+rápidamente no hay conex
+
+260
+00:16:11,081 --> 00:16:16,534
+ión ni confirmación, el primer paquete ya
+lleva datos con TCP stream igual
+
+261
+00:16:16,534 --> 00:16:19,949
+la 1 está la conexión del operador
+entonces tenemos sin sin
+
+262
+00:16:19,949 --> 00:16:23,553
+ac y ac solo que es el saludo
+
+263
+00:16:23,553 --> 00:16:28,562
+3vías o sea con 85 milisegundos entre SYN
+y SYN-ACK que es
+
+264
+00:16:28,562 --> 00:16:31,515
+la ia y vuelta hasta Virginia
+
+265
+00:16:31,515 --> 00:16:34,723
+después del segmento que es lo que haya
+mencionado previamente.
+
+266
+00:16:35,392 --> 00:16:37,278
+También está el PSH-ACK.
+
+267
+00:16:37,278 --> 00:16:39,165
+Ehm...
+
+268
+00:16:39,165 --> 00:16:41,052
+Reviso algo acá, ¿no? Sí.
+
+269
+00:16:41,052 --> 00:16:46,712
+O sea, también tenemos el PSH-ACK con
+GET_LAST, el ACK del servidor,
+
+270
+00:16:46,712 --> 00:16:48,599
+confirmando 16 bytes.
+
+271
+00:16:48,599 --> 00:16:54,249
+La respuesta de 160 bytes, quit, también
+tenemos OK|BYE,
+
+272
+00:16:54,249 --> 00:17:01,306
+cierre con fin por ejemplo podemos acá
+darle follow a
+
+273
+00:17:01,306 --> 00:17:07,683
+al paquete a 269 que es el que tiene el
+get last no dice
+
+274
+00:17:07,683 --> 00:17:12,174
+no te hay bien es el que tiene get last y
+
+275
+00:17:12,362 --> 00:17:13,108
+básicamente
+
+276
+00:17:13,108 --> 00:17:18,957
+realmente es rápidamente lo que es al
+punto de conexión con
+
+277
+00:17:18,957 --> 00:17:19,862
+el operador.
+
+278
+00:17:19,862 --> 00:17:31,938
+Y ya con el último filtro dns.qry.name.
+
+279
+00:17:31,965 --> 00:17:38,305
+Entonces con el filtro de DNS la consulta
+y la respuesta
+
+280
+00:17:38,305 --> 00:17:44,229
+con la IP tienen una TTL de 260 segundos.
+
+281
+00:17:44,229 --> 00:17:49,852
+En resumen el mensaje TLP es la carga de
+aplicación, UDP o
+
+282
+00:17:49,852 --> 00:17:50,823
+TCP Añada.
+
+283
+00:17:50,823 --> 00:17:56,153
+en los puertos y TCP además en secuencia y
+pues también
+
+284
+00:17:56,153 --> 00:17:56,860
+hace la confirmación.
+
+285
+00:17:56,860 --> 00:18:01,143
+El IP añade las direcciones que cruzan
+internet hasta la
+
+286
+00:18:01,143 --> 00:18:04,558
+instancia que tenemos pues en este, en el
+caso.
+

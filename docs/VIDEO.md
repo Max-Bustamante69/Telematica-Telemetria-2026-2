@@ -39,3 +39,7 @@ Cada clip recibe subtítulos (whisper local) y un título de sección. Sobre la 
 ## Qué enviar
 
 Una carpeta con los ocho archivos `.mp4` (más los `-cam.mp4` si la cámara va aparte). Nada más: las figuras, capturas y textos ya están en el repo.
+
+## Cómo se editó (20 de septiembre de 2026)
+
+Los ocho clips (cuatro de cámara de Maximiliano, cuatro de pantalla con cámara de Valeria) se normalizaron a 1920x1080, 30 fps y AAC 48 kHz; se transcribieron con el filtro whisper de ffmpeg (modelo `ggml-small`) y las cues se corrigieron contra el guion; cada clip recibió una tarjeta de título, overlays con las figuras del informe, fragmentos del código fuente, `docker ps`, `nslookup` y las capturas de `evidencias/` en el segundo en que se nombran; los clips de Valeria van a 1,06x para cerrar en 18 minutos; se concatenaron y los subtítulos finales se generaron después del montaje. Todo es reproducible con `docs/video/edicion/montaje.py` y `tarjetas.py` a partir de los clips originales.
