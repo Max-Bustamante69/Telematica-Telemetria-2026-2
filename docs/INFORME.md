@@ -17,7 +17,7 @@ lang: es
 
 Repositorio privado: https://github.com/Max-Bustamante69/Telematica-Telemetria-2026-2
 
-Video de sustentación: `sustentacion-telemetria-v2-1080p.mp4` (18:05, 1080p, subtítulos quemados; `.srt` y `.vtt` en `docs/video/`). Enlace: [se añade al subir el video]
+Video de sustentación: `sustentacion-telemetria-v2-1080p.mp4` (18:05, 1080p, subtítulos quemados; `.srt` y `.vtt` en `docs/video/`). Enlace: https://youtu.be/w80aU1sbpE0
 
 Servidor desplegado: `telemetria.digitdeck.co` (AWS EC2 `i-042a5b79b2cc1fd8e`, `t3.micro`, región `us-east-1`, IP elástica `100.25.236.127`, contenedor Docker `telemetry-server`).
 
@@ -205,7 +205,7 @@ $ sudo docker images telemetry-server
 telemetry-server:latest 114MB
 ```
 
-[Captura: `evidencias/docker-build.png` y `evidencias/docker-ps.png` tomadas por SSH.]
+La figura 3 (sección 7.2) muestra la instancia y el grupo de seguridad desde AWS CloudShell; el estado del contenedor se verificó por SSH como se muestra arriba y en el video de sustentación.
 
 ### 7.2 AWS EC2
 
@@ -235,7 +235,7 @@ $ aws ec2 describe-security-groups --group-ids sg-0061c66974fc07650 --output tab
   tcp 8080  0.0.0.0/0
 ```
 
-![Figura 9. AWS CloudShell en la cuenta del equipo: describe-instances, reglas de entrada del grupo de seguridad y la IP elástica asociada a la instancia.](../evidencias/aws-instancia-security-group.png)
+![Figura 3. AWS CloudShell en la cuenta del equipo: describe-instances, reglas de entrada del grupo de seguridad y la IP elástica asociada a la instancia.](../evidencias/aws-instancia-security-group.png)
 
 ### 7.3 DNS
 
@@ -254,11 +254,11 @@ $ python node/node.py --id NODE09 --server telemetria.digitdeck.co
 00:16:18 TCP <- OK|REGISTERED|NODE09|5000
 ```
 
-![Figura 10. Panel DNS de Cloudflare para digitdeck.co: registro A telemetria con 100.25.236.127 y proxy desactivado (DNS only).](../evidencias/dns-cloudflare.png)
+![Figura 4. Panel DNS de Cloudflare para digitdeck.co: registro A telemetria con 100.25.236.127 y proxy desactivado (DNS only).](../evidencias/dns-cloudflare.png)
 
 ### 7.4 Interfaz web desde Internet
 
-![Figura 3. Interfaz web en http://telemetria.digitdeck.co:8080 con seis nodos enviando desde Medellín al servidor en Virginia del Norte: 4055 datagramas recibidos, 0 perdidos, 217 alertas del nodo que fuerza temperatura alta.](../evidencias/web-telemetria-digitdeck-co.png)
+![Figura 5. Interfaz web en http://telemetria.digitdeck.co:8080 con seis nodos enviando desde Medellín al servidor en Virginia del Norte: 4055 datagramas recibidos, 0 perdidos, 217 alertas del nodo que fuerza temperatura alta.](../evidencias/web-telemetria-digitdeck-co.png)
 
 ## 8. Análisis de tráfico con Wireshark
 
@@ -335,7 +335,7 @@ El mensaje TLP es la carga útil (capa de aplicación). UDP o TCP añaden puerto
 | 9 | `/health`, `/api/status`, `/` | ok |
 | 10 | Nodo detenido con Ctrl+C envía `BYE` y pasa a `INACTIVE` | ok |
 
-[Captura: `evidencias/e2e.png` contra `telemetria.digitdeck.co`.]
+La ejecución contra la nube desde el equipo de Valeria está en la figura 16 (sección 12.2).
 
 ### 9.2 Mensajes transmitidos, recibidos y perdidos
 
@@ -405,7 +405,8 @@ En Internet no se perdió ningún datagrama en 500 enviados a 478 por segundo. C
 9. **El repositorio privado no se puede clonar desde la instancia sin credenciales.** En lugar de guardar un token en la instancia, el código se envía con `git archive --format=tar HEAD | ssh ubuntu@... tar -x`. Un cambio se despliega repitiendo ese comando y `docker compose up -d --build server`.
 10. **El puerto 8080 de Windows estaba ocupado por otro servicio local.** La interfaz web del servidor en WSL se probó por la IP interna de WSL; en la nube no hay conflicto.
 
-[Añadir los problemas que encuentre el equipo durante el despliegue y las capturas.]
+11. **Whisper falla en los términos técnicos al subtitular el video.** La transcripción local del video de sustentación convirtió `SIGPIPE` en «sick pipe», `Bustamante` en «Tamanty» y `100.25.236.127` en tres IP distintas. Los subtítulos se corrigieron contra el guion con una lista de sustituciones antes de quemarlos (`docs/video/edicion/montaje_v2.py`).
+12. **La captura de Wireshark estaba excluida por `.gitignore`.** El patrón `captures/*.pcapng` del inicio del proyecto impedía subirla; se retiró del `.gitignore` y la captura de 64 KB quedó en el repositorio, como pide el enunciado.
 
 ## 11. Conclusiones
 
@@ -417,15 +418,15 @@ En Internet no se perdió ningún datagrama en 500 enviados a 478 por segundo. C
 
 ## 12. Evidencias individuales
 
-[Una subsección por integrante con las capturas descritas en `evidencias/README.md`: `whoami`, `hostname`, `date`, ejecución del nodo o del operador contra `telemetria.digitdeck.co`.]
+Cada integrante aporta capturas tomadas en su propio computador, con `whoami`, `hostname` y la fecha en la misma terminal, seguidas de la ejecución de un componente contra `telemetria.digitdeck.co`. Los scripts `evidencias/capturar.ps1` y `evidencias/capturar-operador.ps1` producen exactamente esa salida.
 
 ### 12.1 Maximiliano Bustamante
 
 Equipo `DESKTOP-J05EGID`, usuario `desktop-j05egid\usuario`, 20 de septiembre de 2026.
 
-![Figura 4. Nodo NODE11 ejecutado en el equipo de Maximiliano: whoami, hostname, fecha, resolución DNS, REGISTER por TCP y telemetría por UDP hacia telemetria.digitdeck.co.](../evidencias/max-1-nodo.png)
+![Figura 9. Nodo NODE11 ejecutado en el equipo de Maximiliano: whoami, hostname, fecha, resolución DNS, REGISTER por TCP y telemetría por UDP hacia telemetria.digitdeck.co.](../evidencias/max-1-nodo.png)
 
-![Figura 5. Cliente operador desde el mismo equipo: nslookup, LIST_NODES con 9 nodos, GET_ALERTS y SYSTEM_STATUS contra el servidor en la nube.](../evidencias/max-2-operador.png)
+![Figura 10. Cliente operador desde el mismo equipo: nslookup, LIST_NODES con 9 nodos, GET_ALERTS y SYSTEM_STATUS contra el servidor en la nube.](../evidencias/max-2-operador.png)
 
 ### 12.2 Valeria Frances Hornung
 
