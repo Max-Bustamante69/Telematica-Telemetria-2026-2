@@ -3,4 +3,3 @@ __pycache__/
 server/build/
 .env
 *.pem
-captures/*.pcapng
